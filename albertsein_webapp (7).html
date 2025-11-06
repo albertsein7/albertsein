@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<title>AlbertSEIN - Voorraadbeheer</title>
+<style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { text-align: center; }
+    input, button, select { font-size: 16px; padding: 5px; margin: 5px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f4f4f4; }
+    .btn { padding: 5px 10px; margin-right: 5px; cursor: pointer; }
+    .understock { background-color: #ffcccc; }
+    .container { display: flex; justify-content: space-between; }
+    .table-container { width: 48%; }
+</style>
+</head>
+<body>
+<h1>AlbertSEIN - Voorraadbeheer</h1>
+
+<label>Nieuwe barcode toevoegen:</label><br>
+<input type="text" id="newBarcode" placeholder="Nieuwe barcode">
+<input type="text" id="newProductName" placeholder="Productnaam">
+<input type="number" id="newStandaard" placeholder="Standaard voorraad" min="0">
+<input type="number" id="newAantal" placeholder="Huidig aantal" min="0">
+<button onclick="addNewProduct()">Voeg product toe</button>
+<br><br>
+<label>Scan barcode of voer handmatig in:</label><br>
+<input type="text" id="barcodeInput" placeholder="Barcode scannen...">
+<input type="number" id="scanAantal" placeholder="Aantal" min="1" value="1">
+<select id="modeSelect">
+    <option value="in">Voorraad binnenkomst</option>
+    <option value="uit">Uitgave/Verkoop</option>
+</select>
+<button onclick="addScan()">Voeg toe</button>
+<button onclick="downloadCSV()">Exporteer CSV</button>
+
+<div class="container">
+    <div class="table-container">
+        <h2>Voorraad</h2>
+        <table id="inventoryTable">
+            <thead>
+                <tr>
+                    <th>Barcode</th>
+                    <th>Productnaam</th>
+                    <th>Standaard</th>
+                    <th>Huidig aantal</th>
+                    <th>Opmerking</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <h2>Uitgave</h2>
+        <table id="outTable">
+            <thead>
+                <tr>
+                    <th>Barcode</th>
+                    <th>Productnaam</th>
+                    <th>Uitgegeven</th>
+                    <th>Opmerking</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+let inventory = [];
+let uitgave = [];
+
+// Functie om data op te slaan in localStorage
+function saveData() {
+    localStorage.setItem('albertSEIN_inventory', JSON.stringify(inventory));
+    localStorage.setItem('albertSEIN_uitgave', JSON.stringify(uitgave));
+}
+
+// Functie om data te laden van localStorage
+function loadData() {
+    const savedInventory = localStorage.getItem('albertSEIN_inventory');
+    const savedUitgave = localStorage.getItem('albertSEIN_uitgave');
+    if(savedInventory) inventory = JSON.parse(savedInventory);
+    if(savedUitgave) uitgave = JSON.parse(savedUitgave);
+}
+
+// Laad data bij openen pagina
+loadData();
+
+function addNewProduct() {
+    const barcode = document.getElementById('newBarcode').value.trim();
+    const name = document.getElementById('newProductName').value.trim();
+    const standaard = parseInt(document.getElementById('newStandaard').value) || 0;
+    const aantal = parseInt(document.getElementById('newAantal').value) || standaard;
+
+    if(!barcode || !name) {
+        alert('Barcode en productnaam zijn verplicht');
+        return;
+    }
+
+    if(inventory.find(p => p.barcode === barcode)) {
+        alert('Product met deze barcode bestaat al');
+        return;
+    }
+
+    const newProduct = { barcode: barcode, productnaam: name, standaard: standaard, aantal: aantal };
+    inventory.push(newProduct);
+
+    document.getElementById('newBarcode').value = '';
+    document.getElementById('newProductName').value = '';
+    document.getElementById('newStandaard').value = '';
+    document.getElementById('newAantal').value = '';
+
+    saveData();
+    renderTables();
+}
+
+function addScan() {
+    const barcode = document.getElementById('barcodeInput').value.trim();
+    if (!barcode) return;
+
+    let scanAantal = parseInt(document.getElementById('scanAantal').value) || 1;
+    if(scanAantal < 1) scanAantal = 1;
+
+    const mode = document.getElementById('modeSelect').value;
+
+    let productInfo = inventory.find(p => p.barcode === barcode);
+    if (!productInfo) {
+        alert('Product niet gevonden. Voeg eerst toe aan productlijst.');
+        return;
+    }
+
+    if (mode === 'in') {
+        productInfo.aantal += scanAantal;
+    } else if (mode === 'uit') {
+        if(productInfo.aantal >= scanAantal) {
+            productInfo.aantal -= scanAantal;
+            let uitItem = uitgave.find(u => u.barcode === barcode);
+            if(!uitItem) {
+                uitItem = { barcode: barcode, productnaam: productInfo.productnaam, uitgegeven: scanAantal, opmerking: '' };
+                uitgave.push(uitItem);
+            } else {
+                uitItem.uitgegeven += scanAantal;
+            }
+        } else {
+            alert('Kan niet uitgeven, voorraad te laag');
+        }
+    }
+
+    document.getElementById('barcodeInput').value = '';
+    document.getElementById('scanAantal').value = 1;
+
+    saveData();
+    renderTables();
+}
+
+function renderTables() {
+    const tbody = document.querySelector('#inventoryTable tbody');
+    tbody.innerHTML = '';
+    inventory.forEach(item => {
+        const tr = document.createElement('tr');
+        const verschil = item.standaard - item.aantal;
+        tr.className = verschil > 0 ? 'understock' : '';
+        tr.innerHTML = `
+            <td>${item.barcode}</td>
+            <td contenteditable="true" oninput="updateField('${item.barcode}', 'productnaam', this.innerText)">${item.productnaam}</td>
+            <td contenteditable="true" oninput="updateField('${item.barcode}', 'standaard', this.innerText)">${item.standaard}</td>
+            <td>${item.aantal}</td>
+            <td>${verschil > 0 ? 'Bestel '+ verschil : ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    const outbody = document.querySelector('#outTable tbody');
+    outbody.innerHTML = '';
+    uitgave.forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${item.barcode}</td>
+            <td>${item.productnaam}</td>
+            <td>${item.uitgegeven}</td>
+            <td contenteditable="true" oninput="updateUitgaveField('${item.barcode}', 'opmerking', this.innerText)">${item.opmerking}</td>
+        `;
+        outbody.appendChild(tr);
+    });
+}
+
+function updateField(barcode, field, value) {
+    let item = inventory.find(i => i.barcode === barcode);
+    if(field === 'standaard') value = parseInt(value) || 0;
+    item[field] = value;
+    saveData();
+    renderTables();
+}
+
+function updateUitgaveField(barcode, field, value) {
+    let item = uitgave.find(u => u.barcode === barcode);
+    item[field] = value;
+    saveData();
+}
+
+function downloadCSV() {
+    let csv = 'Barcode,Productnaam,Standaard,Huidig aantal,Opmerking\n';
+    inventory.forEach(item => {
+        const verschil = item.standaard - item.aantal;
+        csv += `${item.barcode},${item.productnaam},${item.standaard},${item.aantal},${verschil > 0 ? 'Bestel '+verschil : ''}\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'AlbertSEIN_voorraad.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+renderTables();
+</script>
+</body>
+</html
