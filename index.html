@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
@@ -64,10 +65,10 @@
       gap: 10px;
     }
 
-    .app-logo img {
-      height: 40px;
-      width: 40px;
-      object-fit: contain;
+    .app-logo svg {
+      height: 42px;
+      width: 42px;
+      flex-shrink: 0;
     }
 
     .app-title {
@@ -516,25 +517,28 @@
 
     .flash-container {
       position: fixed;
-      top: 12px;
-      right: 12px;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 9999;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      max-width: 320px;
+      gap: 6px;
+      max-width: 360px;
+      pointer-events: none;
     }
 
     .flash {
-      border-radius: 12px;
-      padding: 10px 12px;
+      border-radius: 999px;
+      padding: 8px 12px;
       font-size: 0.85rem;
       color: #ffffff;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       gap: 8px;
       box-shadow: var(--shadow-soft);
-      animation: slideIn 0.2s ease-out;
+      animation: slideIn 0.15s ease-out;
+      pointer-events: auto;
     }
 
     .flash-success {
@@ -551,11 +555,11 @@
 
     .flash-icon {
       font-size: 1rem;
-      margin-top: 1px;
     }
 
     .flash-message {
       flex: 1;
+      font-weight: 500;
     }
 
     .flash-close {
@@ -567,11 +571,11 @@
     @keyframes slideIn {
       from {
         opacity: 0;
-        transform: translateY(-6px);
+        transform: translate(-50%, -6px);
       }
       to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-50%, 0);
       }
     }
 
@@ -682,10 +686,6 @@
       text-align: center;
     }
 
-    .nowrap {
-      white-space: nowrap;
-    }
-
     .mt-4 {
       margin-top: 4px;
     }
@@ -722,7 +722,6 @@
 <body>
   <div class="flash-container" id="flashContainer"></div>
 
-  <!-- Modals -->
   <!-- Add / Unknown product modal -->
   <div class="modal-backdrop" id="productModalBackdrop">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
@@ -785,7 +784,18 @@
   <div class="app-shell">
     <header class="app-header">
       <div class="app-logo">
-        <img src="sein_logo.png" alt="SEIN logo" />
+        <!-- Inline SEIN logo in AH-stijl -->
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <defs>
+            <linearGradient id="seinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#00a6ff" />
+              <stop offset="100%" stop-color="#0078d7" />
+            </linearGradient>
+          </defs>
+          <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#seinGrad)" />
+          <path d="M20 40c1.8 3.5 5.4 6 10.6 6 6.2 0 10.4-3.4 10.4-8.4 0-4.2-2.6-6.5-7.6-7.6l-3.2-.7c-2.8-.6-4-1.5-4-3.1 0-1.9 1.8-3.2 4.6-3.2 2.6 0 4.4.9 5.5 2.8l4.2-2.4C38.9 20 36 18 31 18c-5.7 0-9.8 3.3-9.8 8.1 0 4.1 2.5 6.4 7.4 7.5l3.3.7c3 .7 4.1 1.6 4.1 3.3 0 2-1.9 3.4-4.9 3.4-3 0-5.1-1.2-6.3-3.4L20 40z" fill="#ffffff" />
+          <text x="50%" y="54%" text-anchor="middle" fill="#ffffff" font-size="10" font-family="Poppins, system-ui" font-weight="600">SEIN</text>
+        </svg>
         <div>
           <div class="app-title">AlbertSEIN Voorraadbeheer</div>
           <div class="app-subtitle">Dagelijks voorraadbeheer voor jouw winkel</div>
@@ -811,7 +821,7 @@
     </div>
 
     <main class="layout-main">
-      <!-- Left: voorraad + scanner -->
+      <!-- Links: voorraad + scanner -->
       <section class="card">
         <div class="card-header">
           <div>
@@ -840,7 +850,7 @@
           </div>
         </div>
         <div class="scanner-hint">
-          Tip: gebruik een barcode scanner met Enter. De voorraad wordt direct aangepast na scannen.
+          Scanner: stuur barcode + Enter. Focus op het scanveld is automatisch zolang de scanner actief is.
         </div>
 
         <div class="table-wrapper mt-8">
@@ -860,7 +870,7 @@
         </div>
       </section>
 
-      <!-- Right: bestellijst + uitgave -->
+      <!-- Rechts: bestellijst + uitgave -->
       <section>
         <div class="card bestellijst-card">
           <div class="bestellijst-header">
@@ -895,19 +905,11 @@
   </div>
 
   <script>
-    // --- Data model & storage helpers ---------------------------------------
+    // --- Data & storage ------------------------------------------------------
     const STORAGE_KEYS = {
       PRODUCTS: "albertsein_products_v1",
       MOVEMENTS: "albertsein_movements_v1"
     };
-
-    /**
-     * Product shape:
-     * { id, barcode, name, stdStock, currentStock, createdAt }
-     *
-     * Movement shape:
-     * { date: 'YYYY-MM-DD', type: 'out'|'in', barcode, name, qty, timestamp }
-     */
 
     let products = [];
     let movements = [];
@@ -918,7 +920,7 @@
         const m = localStorage.getItem(STORAGE_KEYS.MOVEMENTS);
         products = p ? JSON.parse(p) : [];
         movements = m ? JSON.parse(m) : [];
-      } catch (e) {
+      } catch {
         products = [];
         movements = [];
       }
@@ -951,7 +953,7 @@
       el.className = "flash flash-" + type;
       const icon = document.createElement("div");
       icon.className = "flash-icon";
-      icon.textContent = type === "success" ? "✅" : type === "error" ? "⚠️" : "ℹ️";
+      icon.textContent = type === "success" ? "✔" : type === "error" ? "!" : "ℹ";
       const msg = document.createElement("div");
       msg.className = "flash-message";
       msg.textContent = message;
@@ -959,7 +961,7 @@
       close.className = "flash-close";
       close.textContent = "×";
       close.addEventListener("click", () => {
-        container.removeChild(el);
+        if (container.contains(el)) container.removeChild(el);
       });
       el.appendChild(icon);
       el.appendChild(msg);
@@ -967,7 +969,7 @@
       container.appendChild(el);
       setTimeout(() => {
         if (container.contains(el)) container.removeChild(el);
-      }, 3500);
+      }, 2000);
     }
 
     // --- Stock status --------------------------------------------------------
@@ -1059,7 +1061,13 @@
 
         const tdCur = document.createElement("td");
         tdCur.className = "col-stock text-center";
-        tdCur.textContent = p.currentStock != null ? String(p.currentStock) : "0";
+        const curDiv = document.createElement("div");
+        curDiv.className = "editable-cell";
+        curDiv.contentEditable = "true";
+        curDiv.textContent = p.currentStock != null ? String(p.currentStock) : "0";
+        curDiv.dataset.id = p.id;
+        curDiv.dataset.field = "currentStock";
+        tdCur.appendChild(curDiv);
         tr.appendChild(tdCur);
 
         const tdStatus = document.createElement("td");
@@ -1211,9 +1219,9 @@
     const productCurrentStockInput = document.getElementById("productCurrentStockInput");
 
     let productModalContext = {
-      mode: "add", // 'add' | 'unknown'
+      mode: "add",
       barcode: "",
-      applyScanAfterAdd: null // { mode, qty } or null
+      applyScanAfterAdd: null
     };
 
     function openProductModal(options = {}) {
@@ -1237,7 +1245,7 @@
       productBarcodeInput.readOnly = !!barcode;
       productNameInput.value = "";
       productStdStockInput.value = "0";
-      productCurrentStockInput.value = mode === "unknown" ? "0" : "0";
+      productCurrentStockInput.value = "0";
 
       productModalBackdrop.classList.add("show");
 
@@ -1252,6 +1260,10 @@
 
     function closeProductModal() {
       productModalBackdrop.classList.remove("show");
+      // Na sluiten: scanner weer actief maken als toggle aan staat
+      if (scannerActiveToggle.checked) {
+        scannerInput.focus();
+      }
     }
 
     productModalCloseBtn.addEventListener("click", closeProductModal);
@@ -1295,7 +1307,6 @@
       products.push(product);
       saveProducts();
 
-      // If this was triggered by an unknown scan, apply that scan now
       if (productModalContext.applyScanAfterAdd) {
         const { mode, qty } = productModalContext.applyScanAfterAdd;
         applyScanToProduct(product, mode, qty, { fromUnknownFlow: true });
@@ -1324,6 +1335,9 @@
     function closeDeleteModal() {
       deleteModalBackdrop.classList.remove("show");
       deleteTargetId = null;
+      if (scannerActiveToggle.checked) {
+        scannerInput.focus();
+      }
     }
 
     deleteModalCloseBtn.addEventListener("click", closeDeleteModal);
@@ -1353,16 +1367,16 @@
     const scanQtyInput = document.getElementById("scanQtyInput");
     const scannerActiveToggle = document.getElementById("scannerActiveToggle");
 
-    function applyScanToProduct(product, mode, qty, options = {}) {
+    function applyScanToProduct(product, mode, qty) {
       const q = Number(qty) || 1;
       if (mode === "in") {
         product.currentStock = Number(product.currentStock || 0) + q;
         saveProducts();
-        showFlash("success", `Voorraad verhoogd (+${q}) voor ${product.name || product.barcode}.`);
+        showFlash("success", `+${q} bij ${product.name || product.barcode}`);
       } else {
         const cur = Number(product.currentStock || 0);
         if (cur < q) {
-          showFlash("error", "Onvoldoende voorraad voor deze uitgave.");
+          showFlash("error", "Onvoldoende voorraad.");
           return;
         }
         product.currentStock = cur - q;
@@ -1376,7 +1390,7 @@
           timestamp: Date.now()
         });
         saveMovements();
-        showFlash("info", `Uitgave geregistreerd (-${q}) voor ${product.name || product.barcode}.`);
+        showFlash("info", `-${q} bij ${product.name || product.barcode}`);
       }
       renderBestellijst();
       renderUitgave();
@@ -1396,7 +1410,6 @@
 
       const product = products.find((p) => p.barcode === barcode);
       if (!product) {
-        // Unknown barcode flow
         showFlash("error", "Product niet herkend.");
         openProductModal({
           mode: "unknown",
@@ -1409,7 +1422,7 @@
       if (mode === "out") {
         const cur = Number(product.currentStock || 0);
         if (cur < qty) {
-          showFlash("error", "Onvoldoende voorraad voor deze uitgave.");
+          showFlash("error", "Onvoldoende voorraad.");
           return;
         }
       }
@@ -1417,28 +1430,58 @@
       applyScanToProduct(product, mode, qty);
     }
 
-    // Scanner input: handle Enter
+    // Scanner input: Enter
     scannerInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
         const value = scannerInput.value;
         scannerInput.value = "";
         handleScan(value);
-        // Focus strategy: only keep focus if scanner is marked active and input had focus
         if (scannerActiveToggle.checked) {
           scannerInput.focus();
         }
       }
     });
 
-    // Keep scanner focus on load if active
+    // Scanner toggle: focus when turned on
+    scannerActiveToggle.addEventListener("change", () => {
+      if (scannerActiveToggle.checked) {
+        scannerInput.focus();
+      }
+    });
+
+    // Slimme focusstrategie:
+    // - Scanner krijgt focus bij start en na scans/modals als scanner actief is.
+    // - We stelen geen focus als gebruiker in andere velden typt.
     window.addEventListener("load", () => {
       if (scannerActiveToggle.checked) {
         scannerInput.focus();
       }
     });
 
-    // Do not steal focus when user clicks elsewhere; we only focus scanner explicitly on load and after scans.
+    // Extra: als scanner actief is en de body de focus heeft (typisch bij scanners),
+    // stuur key events naar het scanveld zodat je niet hoeft te klikken.
+    document.addEventListener("keydown", (e) => {
+      if (!scannerActiveToggle.checked) return;
+
+      const target = e.target;
+      const isEditable =
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable;
+
+      if (isEditable && target !== scannerInput) {
+        // Gebruiker is bewust ergens anders aan het typen
+        return;
+      }
+
+      // Als focus op body/document staat, stuur naar scannerInput
+      if (!isEditable && e.key.length === 1 || e.key === "Enter" || e.key === "Backspace") {
+        if (document.activeElement !== scannerInput) {
+          scannerInput.focus();
+        }
+      }
+    });
 
     // --- Inline editing ------------------------------------------------------
     productTableBody.addEventListener("focusout", (e) => {
@@ -1460,13 +1503,20 @@
           return;
         }
         product.stdStock = num;
+      } else if (field === "currentStock") {
+        const num = Number(value.replace(",", "."));
+        if (isNaN(num) || num < 0) {
+          target.textContent = product.currentStock != null ? String(product.currentStock) : "0";
+          showFlash("error", "Huidige voorraad moet een positief getal zijn.");
+          return;
+        }
+        product.currentStock = num;
       }
       saveProducts();
       renderBestellijst();
       renderProducts();
     });
 
-    // Prevent Enter from adding new lines in editable cells
     productTableBody.addEventListener("keydown", (e) => {
       const target = e.target;
       if (!target.classList.contains("editable-cell")) return;
