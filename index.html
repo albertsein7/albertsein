@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="nl">
 <head>
@@ -9,7 +10,6 @@
     --bg0:#0b1220;
     --bg1:#0f172a;
     --panel:#ffffff;
-    --panel2:#f8fafc;
     --line:rgba(15,23,42,.10);
     --muted:#64748b;
     --text:#0f172a;
@@ -54,6 +54,7 @@
     color:#e2e8f0;
     font-weight:900;
     letter-spacing:.2px;
+    flex-wrap:wrap;
   }
   .brand .dot{
     width:12px;height:12px;border-radius:999px;background:var(--brand);
@@ -124,11 +125,7 @@
   .spacer{flex:1}
 
   /* Scan anchor */
-  .scanWrap{
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-  }
+  .scanWrap{display:flex; flex-direction:column; gap:12px}
   .scanInput{
     width:100%;
     font-size:34px;
@@ -149,6 +146,14 @@
     border-color:rgba(220,38,38,.8);
     box-shadow:0 0 0 6px rgba(220,38,38,.18);
   }
+  .scanInput.pulse{
+    animation: pulseFocus .22s ease-out 1;
+  }
+  @keyframes pulseFocus{
+    0%{transform:scale(1); filter:brightness(1)}
+    60%{transform:scale(1.01); filter:brightness(1.03)}
+    100%{transform:scale(1); filter:brightness(1)}
+  }
 
   .scanHint{
     display:flex;
@@ -160,17 +165,9 @@
     font-size:13px;
   }
 
-  /* Toggle switch (stijl B, medium) */
-  .modeToggleWrap{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
-  .modeLabel{
-    font-size:12px;
-    font-weight:900;
-    color:var(--muted);
-  }
+  /* Toggle switch */
+  .modeToggleWrap{display:flex; flex-direction:column; gap:6px}
+  .modeLabel{font-size:12px; font-weight:900; color:var(--muted)}
   .modeToggle{
     display:flex;
     border-radius:999px;
@@ -191,21 +188,10 @@
     background:transparent;
     transition:background .15s ease, color .15s ease;
   }
-  .modeOption.active-in{
-    background:var(--brand-soft);
-    color:var(--brand-strong);
-  }
-  .modeOption.active-out{
-    background:#fee2e2;
-    color:#b91c1c;
-  }
+  .modeOption.active-in{background:var(--brand-soft); color:var(--brand-strong)}
+  .modeOption.active-out{background:#fee2e2; color:#b91c1c}
 
-  .field{
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    min-width:160px;
-  }
+  .field{display:flex; flex-direction:column; gap:6px; min-width:160px}
   .label{font-size:12px; font-weight:900; color:var(--muted)}
   .input, .select{
     width:100%;
@@ -220,11 +206,7 @@
     border-color:rgba(79,70,229,.55);
     box-shadow:0 0 0 5px rgba(79,70,229,.14);
   }
-  .input.big{
-    font-size:20px;
-    padding:14px 14px;
-    border-width:2px;
-  }
+  .input.big{font-size:20px; padding:14px 14px; border-width:2px}
 
   /* Tables */
   table{width:100%; border-collapse:collapse}
@@ -269,10 +251,6 @@
   .orderTop{
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
     margin-bottom:10px;
-  }
-  .orderCount{
-    font-weight:950;
-    color:#0f172a;
   }
   .orderList{
     display:flex;
@@ -324,15 +302,46 @@
   }
   details.logDay summary::-webkit-details-marker{display:none}
   .logList{padding:10px 12px; display:flex; flex-direction:column; gap:8px}
-  .logItem{
+
+  .logGroup{
+    border:1px solid var(--line);
+    border-radius:12px;
+    overflow:hidden;
+    background:#f8fafc;
+  }
+  .logGroupHeader{
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     padding:10px 10px;
-    border-radius:12px;
-    background:#f8fafc;
-    border:1px solid var(--line);
-    font-weight:900;
+    cursor:pointer;
+    user-select:none;
+    font-weight:950;
   }
-  .logMeta{color:var(--muted); font-weight:850; font-size:12px}
+  .logGroupHeader:focus{
+    outline:none;
+    box-shadow:0 0 0 5px rgba(79,70,229,.14);
+    background:#fff;
+  }
+  .logGroupMeta{color:var(--muted); font-weight:850; font-size:12px}
+  .logTimes{
+    display:none;
+    padding:10px 10px;
+    border-top:1px dashed var(--line);
+    background:#fff;
+  }
+  .logTimes.open{display:block}
+  .logTimePill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#f8fafc;
+    font-weight:900;
+    font-size:12px;
+    margin:4px 6px 0 0;
+    color:#0f172a;
+  }
 
   /* Modal */
   .modalOverlay{
@@ -402,17 +411,62 @@
   .toastTitle{font-weight:950}
   .toastMsg{color:var(--muted); font-weight:850; margin-top:2px}
 
+  /* Scan confirm overlay */
+  .scanFlash{
+    position:fixed;
+    left:50%;
+    top:18px;
+    transform:translateX(-50%);
+    z-index:70;
+    display:none;
+    padding:14px 16px;
+    border-radius:18px;
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--line);
+    box-shadow:0 18px 50px rgba(0,0,0,.22);
+    min-width:min(720px, calc(100vw - 32px));
+  }
+  .scanFlash.show{display:block; animation: flashIn .12s ease-out 1}
+  @keyframes flashIn{
+    from{opacity:0; transform:translateX(-50%) translateY(-6px)}
+    to{opacity:1; transform:translateX(-50%) translateY(0)}
+  }
+  .scanFlashTop{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    font-weight:950;
+  }
+  .scanFlashName{font-size:20px}
+  .scanFlashMeta{color:var(--muted); font-weight:900; font-size:13px}
+  .pill{
+    padding:6px 10px;
+    border-radius:999px;
+    font-weight:950;
+    font-size:12px;
+    border:1px solid var(--line);
+    background:#f8fafc;
+  }
+  .pill.in{background:var(--brand-soft); color:var(--brand-strong)}
+  .pill.out{background:#fee2e2; color:#b91c1c}
+
+  /* Work mode */
+  .workMode .zone.products{display:none}
+  .workMode .grid{grid-template-columns: 1fr 560px}
+  .workMode .zone.scan{grid-column:1}
+  .workMode .zone.orders{grid-column:2}
+
   @media (max-width: 1650px){
     .grid{grid-template-columns: 1fr}
     .zone{padding:12px}
     .tableWrap{max-height:52vh}
     .orderList{max-height:52vh}
+    .workMode .grid{grid-template-columns:1fr}
+    .workMode .zone.orders{grid-column:auto}
   }
 </style>
 </head>
 
 <body>
-<div class="app">
+<div class="app" id="appRoot">
   <div class="topbar">
     <div class="brand">
       <div class="dot"></div>
@@ -420,6 +474,8 @@
       <div class="subtle">scan-first • lokaal • voorspelbaar</div>
     </div>
     <div class="top-actions">
+      <button class="btn dark small" id="btnWorkMode">Werkmodus</button>
+      <button class="btn dark small" id="btnExportOrders">Export bestellijst</button>
       <button class="btn dark small" id="btnExport">Export JSON</button>
       <button class="btn dark small" id="btnImport">Import JSON</button>
       <button class="btn dark small" id="btnBackup">Maak backup</button>
@@ -429,7 +485,7 @@
 
   <div class="grid">
     <!-- LINKS: Scan & acties -->
-    <div class="zone">
+    <div class="zone scan">
       <div class="card">
         <div class="cardHeader">
           <div>Scan & acties</div>
@@ -439,7 +495,8 @@
           <div class="scanWrap">
             <input id="scanInput" class="scanInput mode-in" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="Scan barcode…" />
             <div class="scanHint">
-              <div class="subtle">Scanner werkt alleen als dit veld focus heeft</div>
+              <div class="subtle" id="scanHintText">Scanner is actief (geen klikken nodig)</div>
+              <div class="subtle mono" id="scanBufferHint"></div>
             </div>
 
             <div class="row nowrap">
@@ -459,7 +516,7 @@
 
             <div class="row">
               <button class="btn ghost" id="btnUndo">Undo laatste scan</button>
-              <button class="btn ghost" id="btnFocusScan">Focus scanveld</button>
+              <button class="btn ghost" id="btnMinusOne">Corrigeer -1 (laatste)</button>
               <button class="btn danger" id="btnClearDay">Wis daglog</button>
             </div>
 
@@ -473,7 +530,7 @@
     </div>
 
     <!-- MIDDEN: Productbeheer -->
-    <div class="zone">
+    <div class="zone products">
       <div class="card">
         <div class="cardHeader">
           <div>Productbeheer</div>
@@ -513,7 +570,7 @@
     </div>
 
     <!-- RECHTS: Bestellijst -->
-    <div class="zone">
+    <div class="zone orders">
       <div class="card">
         <div class="cardHeader">
           <div>Bestellijst</div>
@@ -525,6 +582,22 @@
             <div class="spacer"></div>
             <button class="btn ghost small" id="btnToggleHideChecked">Verberg afgevinkt</button>
           </div>
+
+          <!-- NIEUW: zoeken + sorteren -->
+          <div class="row" style="margin-bottom:10px">
+            <div class="field" style="flex:1; min-width:220px">
+              <div class="label">Zoek in bestellijst</div>
+              <input id="orderSearchInput" class="input" autocomplete="off" spellcheck="false" placeholder="Typ om te filteren…" />
+            </div>
+            <div class="field" style="min-width:220px">
+              <div class="label">Sorteren</div>
+              <div class="row nowrap">
+                <button class="btn ghost small" id="btnOrderSortName">A–Z</button>
+                <button class="btn ghost small" id="btnOrderSortCategory">Categorie</button>
+              </div>
+            </div>
+          </div>
+
           <div id="orderList" class="orderList"></div>
         </div>
       </div>
@@ -578,24 +651,34 @@
 <input type="file" id="fileImport" accept="application/json" style="display:none" />
 <div class="toasts" id="toasts"></div>
 
+<div class="scanFlash" id="scanFlash" aria-live="polite">
+  <div class="scanFlashTop">
+    <div class="scanFlashName" id="scanFlashName">—</div>
+    <div class="pill in" id="scanFlashPill">BINNEN</div>
+  </div>
+  <div class="scanFlashMeta" id="scanFlashMeta">—</div>
+</div>
+
 <script>
 (() => {
   "use strict";
 
-  const APP_VERSION = 1;
-  const LS_KEY = "albertsein_state_v1";
-  const LS_BACKUP_KEY = "albertsein_backup_ring_v1";
-  const LS_CAT_LEARN_KEY = "albertsein_cat_learn_v1";
+  const APP_VERSION = 2;
+  const LS_KEY = "albertsein_state_v2";
+  const LS_BACKUP_KEY = "albertsein_backup_ring_v2";
+  const LS_CAT_LEARN_KEY = "albertsein_cat_learn_v2";
 
   const el = {
+    appRoot: document.getElementById("appRoot"),
     storageStatus: document.getElementById("storageStatus"),
 
     scanInput: document.getElementById("scanInput"),
     qtyInput: document.getElementById("qtyInput"),
     modeToggle: document.getElementById("modeToggle"),
+    scanBufferHint: document.getElementById("scanBufferHint"),
 
     btnUndo: document.getElementById("btnUndo"),
-    btnFocusScan: document.getElementById("btnFocusScan"),
+    btnMinusOne: document.getElementById("btnMinusOne"),
     btnClearDay: document.getElementById("btnClearDay"),
     dayLogWrap: document.getElementById("dayLogWrap"),
 
@@ -608,6 +691,12 @@
     btnResetOrdered: document.getElementById("btnResetOrdered"),
     btnToggleHideChecked: document.getElementById("btnToggleHideChecked"),
 
+    orderSearchInput: document.getElementById("orderSearchInput"),
+    btnOrderSortName: document.getElementById("btnOrderSortName"),
+    btnOrderSortCategory: document.getElementById("btnOrderSortCategory"),
+
+    btnWorkMode: document.getElementById("btnWorkMode"),
+    btnExportOrders: document.getElementById("btnExportOrders"),
     btnExport: document.getElementById("btnExport"),
     btnImport: document.getElementById("btnImport"),
     btnBackup: document.getElementById("btnBackup"),
@@ -628,6 +717,11 @@
     mCurrent: document.getElementById("mCurrent"),
 
     toasts: document.getElementById("toasts"),
+
+    scanFlash: document.getElementById("scanFlash"),
+    scanFlashName: document.getElementById("scanFlashName"),
+    scanFlashPill: document.getElementById("scanFlashPill"),
+    scanFlashMeta: document.getElementById("scanFlashMeta"),
   };
 
   const nowISO = () => new Date().toISOString();
@@ -642,6 +736,13 @@
   }[c]));
   const safeJSONParse = (s) => { try { return JSON.parse(s); } catch { return null; } };
   const uid = () => "p_" + Math.random().toString(36).slice(2,10) + "_" + Date.now().toString(36);
+
+  const fmtTimeHHMM = (iso) => {
+    const d = new Date(iso);
+    const hh = String(d.getHours()).padStart(2,"0");
+    const mm = String(d.getMinutes()).padStart(2,"0");
+    return `${hh}:${mm}`;
+  };
 
   function toast(type, title, msg, ms=2600){
     const t = document.createElement("div");
@@ -660,6 +761,16 @@
       t.style.transition = "opacity .2s ease, transform .2s ease";
       setTimeout(() => t.remove(), 220);
     }, ms);
+  }
+
+  function showScanFlash({name, barcode, dir, qty, after}){
+    el.scanFlashName.textContent = name || barcode;
+    el.scanFlashPill.textContent = dir === "out" ? "UIT" : "BINNEN";
+    el.scanFlashPill.className = "pill " + (dir === "out" ? "out" : "in");
+    el.scanFlashMeta.textContent = `Barcode: ${barcode} • Aantal: ${qty} • Nieuw: ${after}`;
+    el.scanFlash.classList.add("show");
+    clearTimeout(showScanFlash._t);
+    showScanFlash._t = setTimeout(() => el.scanFlash.classList.remove("show"), 850);
   }
 
   const baseRules = [
@@ -719,8 +830,13 @@
     products: [],
     scanHistory: [],
     dayLog: {},
-    ui: { hideCheckedOrders: false },
-    meta: { lastSavedAt: null, createdAt: nowISO() }
+    ui: {
+      hideCheckedOrders: false,
+      workMode: false,
+      orderSort: "need",          // "need" | "name" | "category"
+      orderSearch: ""
+    },
+    meta: { lastSavedAt: null, createdAt: nowISO(), lastDay: todayKey() }
   });
 
   let state = defaultState();
@@ -774,8 +890,7 @@
   function makeBackup(reason="auto"){
     const ring = loadBackupRing();
     ring.unshift({ at: nowISO(), reason, state });
-    const trimmed = ring.slice(0, 12);
-    saveBackupRing(trimmed);
+    saveBackupRing(ring.slice(0, 12));
   }
 
   function saveAll(reason="save"){
@@ -896,25 +1011,52 @@
   function computeOrderItems(){
     return state.products
       .map(p => ({ p, need: Math.max(0, (p.standard||0) - (p.current||0)) }))
-      .filter(x => x.need > 0)
-      .sort((a,b) => (b.need - a.need) || a.p.name.localeCompare(b.p.name, "nl"));
+      .filter(x => x.need > 0);
+  }
+
+  function sortOrderItems(items){
+    const mode = state.ui.orderSort || "need";
+    if (mode === "name"){
+      return items.sort((a,b) => (a.p.name||"").localeCompare(b.p.name||"", "nl"));
+    }
+    if (mode === "category"){
+      return items.sort((a,b) => {
+        const ac = (a.p.category||"").localeCompare(b.p.category||"", "nl");
+        if (ac !== 0) return ac;
+        return (a.p.name||"").localeCompare(b.p.name||"", "nl");
+      });
+    }
+    // default: need desc, then name
+    return items.sort((a,b) => (b.need - a.need) || (a.p.name||"").localeCompare(b.p.name||"", "nl"));
   }
 
   function renderOrders(){
-    const items = computeOrderItems();
-    el.orderCount.textContent = `${items.length} te bestellen`;
-
     const hideChecked = !!state.ui.hideCheckedOrders;
     el.btnToggleHideChecked.textContent = hideChecked ? "Toon alles" : "Verberg afgevinkt";
 
-    if (items.length === 0){
+    const q = String(state.ui.orderSearch || "").trim().toLowerCase();
+
+    let items = computeOrderItems();
+    if (q){
+      items = items.filter(x => (x.p.name||"").toLowerCase().includes(q));
+    }
+
+    items = sortOrderItems(items);
+
+    // count blijft “te bestellen” op basis van echte items (zonder zoekfilter)
+    const totalToOrder = computeOrderItems().length;
+    el.orderCount.textContent = `${totalToOrder} te bestellen`;
+
+    const visible = hideChecked ? items.filter(x => !x.p.ordered) : items;
+
+    if (totalToOrder === 0){
       el.orderList.innerHTML = `<div class="help">Alles is op peil.</div>`;
       return;
     }
-
-    const visible = hideChecked ? items.filter(x => !x.p.ordered) : items;
     if (visible.length === 0){
-      el.orderList.innerHTML = `<div class="help">Alles is afgevinkt. Zet “Toon alles” aan of reset de vinkjes.</div>`;
+      el.orderList.innerHTML = q
+        ? `<div class="help">Geen resultaten voor je zoekterm.</div>`
+        : `<div class="help">Alles is afgevinkt. Zet “Toon alles” aan of reset de vinkjes.</div>`;
       return;
     }
 
@@ -938,36 +1080,96 @@
     });
   }
 
+  function stackDayEvents(events){
+    // stack per barcode + dir, maar behoud tijden
+    const map = new Map();
+    for (const ev of events){
+      const key = `${ev.barcode}__${ev.dir}`;
+      if (!map.has(key)){
+        map.set(key, {
+          barcode: ev.barcode,
+          name: ev.name,
+          dir: ev.dir,
+          qty: 0,
+          times: []
+        });
+      }
+      const g = map.get(key);
+      g.qty += clampInt(ev.qty, 1, 9999);
+      g.times.push(ev.at);
+    }
+    // sort: meest recent (laatste tijd) bovenaan
+    return Array.from(map.values()).sort((a,b) => {
+      const atA = a.times[a.times.length-1] || "";
+      const atB = b.times[b.times.length-1] || "";
+      return atB.localeCompare(atA);
+    });
+  }
+
   function renderDayLog(){
     const days = Object.keys(state.dayLog || {}).sort((a,b) => b.localeCompare(a));
     if (days.length === 0){
       el.dayLogWrap.innerHTML = `<div class="help">Nog geen scans vandaag.</div>`;
       return;
     }
+
     el.dayLogWrap.innerHTML = days.map(day => {
       const list = Array.isArray(state.dayLog[day]) ? state.dayLog[day] : [];
       const outCount = list.filter(x => x.dir === "out").length;
       const inCount = list.filter(x => x.dir === "in").length;
+
+      const groups = stackDayEvents(list);
+
+      const groupsHtml = groups.length ? groups.map((g, idx) => {
+        const dirLabel = g.dir === "out" ? "uit" : g.dir === "in" ? "in" : String(g.dir||"");
+        const title = `${g.name || g.barcode} — ${dirLabel.toUpperCase()} × ${g.qty}`;
+        const times = g.times.slice().sort((a,b)=>a.localeCompare(b));
+        const timesHtml = times.map(t => `<span class="logTimePill">${escapeHTML(fmtTimeHHMM(t))}</span>`).join("");
+
+        return `
+          <div class="logGroup">
+            <div class="logGroupHeader" role="button" tabindex="0" data-day="${escapeHTML(day)}" data-idx="${idx}">
+              <div>
+                <div>${escapeHTML(title)}</div>
+                <div class="logGroupMeta">${escapeHTML(g.barcode)}</div>
+              </div>
+              <div class="logGroupMeta">klik voor tijden</div>
+            </div>
+            <div class="logTimes" id="logTimes_${escapeHTML(day)}_${idx}">
+              <div class="logGroupMeta" style="margin-bottom:6px">Tijden</div>
+              ${timesHtml || `<span class="logTimePill">—</span>`}
+            </div>
+          </div>
+        `;
+      }).join("") : `<div class="help">Geen items.</div>`;
+
       return `
         <details class="logDay" ${day === todayKey() ? "open" : ""}>
           <summary>
             <span>${escapeHTML(day)}</span>
-            <span class="logMeta">in: ${inCount} • uit: ${outCount} • totaal: ${list.length}</span>
+            <span class="logGroupMeta">in: ${inCount} • uit: ${outCount} • totaal: ${list.length}</span>
           </summary>
           <div class="logList">
-            ${list.slice().reverse().map(item => `
-              <div class="logItem">
-                <div>
-                  <div>${escapeHTML(item.name || item.barcode)}</div>
-                  <div class="logMeta">${escapeHTML(item.time)} • ${item.dir === "out" ? "uit" : item.dir === "in" ? "in" : "undo"} • aantal: ${item.qty}</div>
-                </div>
-                <div class="mono">${escapeHTML(item.barcode)}</div>
-              </div>
-            `).join("")}
+            ${groupsHtml}
           </div>
         </details>
       `;
     }).join("");
+
+    // bind toggles
+    el.dayLogWrap.querySelectorAll(".logGroupHeader").forEach(h => {
+      const toggle = () => {
+        const day = h.dataset.day;
+        const idx = h.dataset.idx;
+        const box = document.getElementById(`logTimes_${day}_${idx}`);
+        if (!box) return;
+        box.classList.toggle("open");
+      };
+      h.addEventListener("click", toggle);
+      h.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); }
+      });
+    });
   }
 
   function renderAll(){
@@ -975,6 +1177,7 @@
     renderProducts();
     renderOrders();
     renderDayLog();
+    applyWorkModeUI();
   }
 
   let modalMode = "add";
@@ -1016,7 +1219,7 @@
     el.modalOverlay.setAttribute("aria-hidden", "true");
     modalMode = "add";
     modalProductId = null;
-    if (focusScan) setTimeout(() => el.scanInput.focus(), 0);
+    if (focusScan) setTimeout(ensureScanFocus, 50);
   }
 
   function modalUpdateCatHint(){
@@ -1082,13 +1285,10 @@
 
       toast("success","Product toegevoegd", `${prod.name || prod.barcode} is opgeslagen.`);
 
-      // Modal blijft open: velden resetten voor volgende product
       el.mBarcode.value = "";
       el.mName.value = "";
-      if (!categoryManual){
-        el.mCategory.value = "";
-        el.mCatHint.textContent = "AI categorie actief";
-      }
+      el.mCategory.value = "";
+      el.mCatHint.textContent = "AI categorie actief";
       el.mStandard.value = 0;
       el.mCurrent.value = 0;
       el.mBarcode.focus();
@@ -1159,6 +1359,7 @@
     state.dayLog[day].push({ at: nowISO(), time, barcode, name, dir, qty });
   }
 
+  // ✅ scan: geen confirm popups, alleen blokkeren bij negatief
   function applyScan(barcode, qty){
     const code = String(barcode || "").trim();
     const q = clampInt(qty, 1, 9999);
@@ -1195,7 +1396,7 @@
       before,
       after: prod.current
     });
-    state.scanHistory = state.scanHistory.slice(-50);
+    state.scanHistory = state.scanHistory.slice(-80);
 
     logScan({ barcode: prod.barcode, name: prod.name, dir, qty: q });
 
@@ -1205,7 +1406,17 @@
     renderDayLog();
 
     beep("ok");
+
+    showScanFlash({name: prod.name, barcode: prod.barcode, dir, qty: q, after: prod.current});
+
+    // ✅ Alleen bij exact 1 over: subtiele melding in dezelfde scan-flash
+    if (dir === "out" && prod.current === 1){
+      el.scanFlashMeta.textContent = "⚠️ Nog 1 op voorraad";
+    }
+
     toast("success", dir === "in" ? "Binnen geboekt" : "Uit geboekt", `${prod.name || prod.barcode} • aantal ${q}`);
+
+    setTimeout(ensureScanFocus, 0);
   }
 
   function undoLastScan(){
@@ -1239,6 +1450,53 @@
     saveAll("undo");
     renderAll();
     toast("success","Undo", `${prod.name || prod.barcode} teruggezet.`);
+    setTimeout(ensureScanFocus, 0);
+  }
+
+  function minusOneLast(){
+    const last = state.scanHistory[state.scanHistory.length - 1];
+    if (!last){
+      toast("info","Correctie","Geen laatste scan gevonden.");
+      return;
+    }
+    const prod = state.products.find(p => p.id === last.productId);
+    if (!prod){
+      toast("error","Correctie","Product niet gevonden.");
+      return;
+    }
+
+    const dir = last.dir;
+    const before = prod.current;
+
+    if (dir === "in"){
+      if (prod.current - 1 < 0){
+        toast("error","Correctie","Kan niet onder 0.");
+        return;
+      }
+      prod.current = clampInt(prod.current - 1, 0, 999999);
+    } else {
+      prod.current = clampInt(prod.current + 1, 0, 999999);
+    }
+
+    prod.updatedAt = nowISO();
+    state.scanHistory.push({
+      at: nowISO(),
+      productId: prod.id,
+      barcode: prod.barcode,
+      name: prod.name,
+      dir: "undo",
+      qty: 1,
+      before,
+      after: prod.current
+    });
+    state.scanHistory = state.scanHistory.slice(-80);
+
+    logScan({ barcode: prod.barcode, name: prod.name, dir: "undo", qty: 1 });
+
+    saveAll("minus-one");
+    renderAll();
+    toast("success","Correctie", `${prod.name || prod.barcode} • -1 gecorrigeerd.`);
+    setTimeout(ensureScanFocus, 0);
   }
 
   function exportJSON(){
@@ -1257,6 +1515,30 @@
     a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 500);
     toast("success","Export gemaakt","JSON export is gedownload.");
+    setTimeout(ensureScanFocus, 0);
+  }
+
+  function exportOrders(){
+    // export: niet-afgevinkt, en respecteer zoekfilter niet (export = echte lijst)
+    const items = sortOrderItems(computeOrderItems()).filter(x => !x.p.ordered);
+    if (!items.length){
+      toast("info","Bestellijst","Geen open items om te exporteren.");
+      return;
+    }
+    const lines = [
+      "Artikel;Aantal",
+      ...items.map(({p, need}) => `${(p.name||"").replaceAll(";"," ")};${need}`)
+    ];
+    const blob = new Blob([lines.join("\n")], {type:"text/plain;charset=utf-8"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `albertsein_bestellijst_${todayKey()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    toast("success","Bestellijst export","Alle niet‑afgevinkte items zijn geëxporteerd.");
+    setTimeout(ensureScanFocus, 0);
   }
 
   function importJSONFile(file){
@@ -1278,7 +1560,7 @@
       next.scanHistory = Array.isArray(incomingState.scanHistory) ? incomingState.scanHistory : [];
       next.dayLog = (incomingState.dayLog && typeof incomingState.dayLog === "object") ? incomingState.dayLog : {};
       next.ui = (incomingState.ui && typeof incomingState.ui === "object") ? { ...next.ui, ...incomingState.ui } : next.ui;
-      next.meta = { ...next.meta, importedAt: nowISO() };
+      next.meta = { ...next.meta, importedAt: nowISO(), lastDay: todayKey() };
 
       next.products.forEach(p => {
         if (!p.categoryManual){
@@ -1300,7 +1582,7 @@
       saveAll("import");
       renderAll();
       toast("success","Import gelukt","Gegevens zijn ingeladen.");
-      el.scanInput.focus();
+      setTimeout(ensureScanFocus, 0);
     };
     reader.readAsText(file);
   }
@@ -1308,6 +1590,7 @@
   function manualBackup(){
     makeBackup("manual");
     toast("success","Backup gemaakt","Je kunt nu altijd herstellen via ‘Herstel backup’.");
+    setTimeout(ensureScanFocus, 0);
   }
 
   function restoreBackup(){
@@ -1327,7 +1610,7 @@
     saveAll("restore");
     renderAll();
     toast("success","Hersteld", `Backup hersteld (${latest.reason}).`);
-    el.scanInput.focus();
+    setTimeout(ensureScanFocus, 0);
   }
 
   function storageHealthCheck(){
@@ -1342,15 +1625,89 @@
     }
   }
 
+  function applyWorkModeUI(){
+    const on = !!state.ui.workMode;
+    el.appRoot.classList.toggle("workMode", on);
+    el.btnWorkMode.textContent = on ? "Volledige modus" : "Werkmodus";
+  }
+
+  function toggleWorkMode(){
+    state.ui.workMode = !state.ui.workMode;
+    saveAll("workmode");
+    applyWorkModeUI();
+    setTimeout(ensureScanFocus, 0);
+  }
+
+  function dayRolloverIfNeeded(){
+    const t = todayKey();
+    if (state.meta.lastDay !== t){
+      state.meta.lastDay = t;
+
+      state.products.forEach(p => p.ordered = false);
+      state.scanHistory = [];
+
+      saveAll("day-rollover");
+      makeBackup("day-rollover");
+      toast("info","Nieuwe dag","Vinkjes gereset en scanbuffer opgeschoond.");
+    }
+  }
+
+  /* Focus bewaker (scanner altijd actief) */
+  function ensureScanFocus(){
+    const scan = el.scanInput;
+    if (!scan) return;
+
+    if (el.modalOverlay.classList.contains("open")) return;
+
+    const active = document.activeElement;
+    if (active === scan) return;
+
+    if (active && (
+      active.tagName === "INPUT" ||
+      active.tagName === "TEXTAREA" ||
+      active.isContentEditable
+    )) return;
+
+    scan.focus({ preventScroll:true });
+    scan.classList.remove("pulse");
+    void scan.offsetWidth;
+    scan.classList.add("pulse");
+  }
+
+  /* Scan-buffer */
+  const scanBuffer = {
+    s: "",
+    lastAt: 0,
+    timer: null,
+    clear(){
+      this.s = "";
+      this.lastAt = 0;
+      el.scanBufferHint.textContent = "";
+      if (this.timer) clearTimeout(this.timer);
+      this.timer = null;
+    },
+    pushChar(ch){
+      const now = Date.now();
+      if (now - this.lastAt > 120) this.s = "";
+      this.lastAt = now;
+      this.s += ch;
+      el.scanBufferHint.textContent = this.s ? `buffer: ${this.s}` : "";
+      if (this.timer) clearTimeout(this.timer);
+      this.timer = setTimeout(() => this.clear(), 450);
+    },
+    commit(){
+      const code = this.s.trim();
+      this.clear();
+      if (!code) return;
+      const qty = clampInt(parseInt(el.qtyInput.value,10), 1, 9999);
+      applyScan(code, qty);
+    }
+  };
+
   function setupEvents(){
     el.modeToggle.querySelectorAll(".modeOption").forEach(opt => {
-      opt.addEventListener("click", () => {
-        const m = opt.dataset.mode;
-        setMode(m);
-      });
+      opt.addEventListener("click", () => setMode(opt.dataset.mode));
     });
-
-    el.btnFocusScan.addEventListener("click", () => el.scanInput.focus());
 
     el.scanInput.addEventListener("keydown", (e) => {
       if (e.key !== "Enter") return;
@@ -1364,9 +1721,11 @@
     el.qtyInput.addEventListener("change", () => {
       el.qtyInput.value = String(clampInt(parseInt(el.qtyInput.value,10), 1, 9999));
       saveAll("qty");
+      setTimeout(ensureScanFocus, 0);
     });
 
     el.btnUndo.addEventListener("click", undoLastScan);
+    el.btnMinusOne.addEventListener("click", minusOneLast);
 
     el.btnClearDay.addEventListener("click", () => {
       const day = todayKey();
@@ -1378,11 +1737,10 @@
       } else {
         toast("info","Daglog","Vandaag is al leeg.");
       }
-      el.scanInput.focus();
+      setTimeout(ensureScanFocus, 0);
     });
 
     el.searchInput.addEventListener("input", () => renderProducts());
-
     el.btnAdd.addEventListener("click", () => openModal("add"));
 
     el.btnModalClose.addEventListener("click", () => closeModal({focusScan:true}));
@@ -1398,9 +1756,7 @@
       el.mCategory.value = normalizeCategoryInput(inferred);
       modalUpdateCatHint();
     });
-    el.mCategory.addEventListener("input", () => {
-      modalUpdateCatHint();
-    });
+    el.mCategory.addEventListener("input", modalUpdateCatHint);
     el.mCategory.addEventListener("blur", () => {
       const v = String(el.mCategory.value || "").trim();
       if (v) el.mCategory.value = normalizeCategoryInput(v);
@@ -1411,6 +1767,7 @@
     el.btnModalDelete.addEventListener("click", deleteModalProduct);
 
     el.btnExport.addEventListener("click", exportJSON);
+    el.btnExportOrders.addEventListener("click", exportOrders);
     el.btnImport.addEventListener("click", () => el.fileImport.click());
     el.fileImport.addEventListener("change", (e) => {
       const file = e.target.files?.[0];
@@ -1426,16 +1783,81 @@
       saveAll("reset-ordered");
       renderOrders();
       toast("success","Bestellijst","Alle vinkjes zijn gewist.");
-      el.scanInput.focus();
+      setTimeout(ensureScanFocus, 0);
     });
 
     el.btnToggleHideChecked.addEventListener("click", () => {
       state.ui.hideCheckedOrders = !state.ui.hideCheckedOrders;
       saveAll("toggle-hide-checked");
       renderOrders();
+      setTimeout(ensureScanFocus, 0);
     });
 
-    window.addEventListener("load", () => setTimeout(() => el.scanInput.focus(), 0));
+    // NIEUW: bestellijst zoeken
+    el.orderSearchInput.addEventListener("input", () => {
+      state.ui.orderSearch = String(el.orderSearchInput.value || "");
+      saveAll("order-search");
+      renderOrders();
+    });
+
+    // NIEUW: bestellijst sorteren
+    el.btnOrderSortName.addEventListener("click", () => {
+      state.ui.orderSort = "name";
+      saveAll("order-sort");
+      renderOrders();
+      toast("info","Sorteren","Bestellijst: A–Z");
+      setTimeout(ensureScanFocus, 0);
+    });
+    el.btnOrderSortCategory.addEventListener("click", () => {
+      state.ui.orderSort = "category";
+      saveAll("order-sort");
+      renderOrders();
+      toast("info","Sorteren","Bestellijst: categorie");
+      setTimeout(ensureScanFocus, 0);
+    });
+
+    el.btnWorkMode.addEventListener("click", toggleWorkMode);
+
+    document.addEventListener("keydown", (e) => {
+      if (el.modalOverlay.classList.contains("open")) return;
+
+      const active = document.activeElement;
+      const inTypingField = active && (
+        active.tagName === "INPUT" ||
+        active.tagName === "TEXTAREA" ||
+        active.isContentEditable
+      );
+
+      // laat typen in zoekvelden gewoon werken
+      if (inTypingField && active !== el.scanInput) return;
+
+      if (e.key === "Enter"){
+        if (scanBuffer.s) {
+          e.preventDefault();
+          scanBuffer.commit();
+          return;
+        }
+        return;
+      }
+
+      if (e.key === "Escape"){
+        scanBuffer.clear();
+        return;
+      }
+
+      if (e.key.length === 1){
+        const ch = e.key;
+        if (/[\w\d\-]/.test(ch)){
+          scanBuffer.pushChar(ch);
+          if (document.activeElement !== el.scanInput) ensureScanFocus();
+        }
+      }
+    });
+
+    window.addEventListener("focus", () => setTimeout(ensureScanFocus, 0));
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) setTimeout(ensureScanFocus, 0);
+    });
   }
 
   function ensureDataSafety(){
@@ -1448,6 +1870,8 @@
 
   function init(){
     loadState();
+    learnMap = loadLearnMap();
+
     state.products = Array.isArray(state.products) ? state.products.map(normalizeProduct) : [];
     state.products.forEach(p => {
       if (!p.categoryManual){
@@ -1458,12 +1882,21 @@
       }
       if (p.ordered == null) p.ordered = false;
     });
+
+    // sync UI fields
+    el.orderSearchInput.value = String(state.ui.orderSearch || "");
+
+    dayRolloverIfNeeded();
+
     saveAll("init");
     makeBackup("init");
     setupEvents();
     ensureDataSafety();
     renderAll();
-    el.scanInput.focus();
+
+    setTimeout(ensureScanFocus, 0);
+    setInterval(ensureScanFocus, 300);
+    setInterval(dayRolloverIfNeeded, 30 * 1000);
   }
 
   init();
