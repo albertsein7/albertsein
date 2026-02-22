@@ -1,1564 +1,1473 @@
-﻿
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <title>AlbertSEIN Voorraadbeheer</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #0078d7, #00a6ff);
-      --card-bg: #ffffff;
-      --accent: #00a6ff;
-      --accent-soft: #e5f4ff;
-      --danger: #e53935;
-      --warning: #ffb300;
-      --success: #43a047;
-      --text-main: #1f2933;
-      --text-muted: #6b7280;
-      --shadow-soft: 0 10px 25px rgba(15, 23, 42, 0.15);
-      --radius-card: 16px;
-      --radius-pill: 999px;
-      --transition-fast: 0.15s ease-out;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: var(--bg-gradient);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .app-shell {
-      max-width: 1400px;
-      margin: 16px auto 32px;
-      padding: 12px;
-    }
-
-    @media (min-width: 768px) {
-      .app-shell {
-        padding: 24px;
-      }
-    }
-
-    .app-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      color: #ffffff;
-      flex-wrap: wrap;
-    }
-
-    .app-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .app-logo svg {
-      height: 42px;
-      width: 42px;
-      flex-shrink: 0;
-    }
-
-    .app-title {
-      font-size: 1.6rem;
-      font-weight: 600;
-      letter-spacing: 0.02em;
-    }
-
-    .app-subtitle {
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    .top-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .search-wrapper {
-      flex: 1 1 220px;
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 10px 14px;
-      padding-left: 34px;
-      border-radius: var(--radius-pill);
-      border: none;
-      outline: none;
-      font-size: 0.9rem;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-
-    .sort-select {
-      border-radius: var(--radius-pill);
-      border: none;
-      padding: 9px 14px;
-      font-size: 0.9rem;
-      box-shadow: var(--shadow-soft);
-      background: #ffffff;
-      outline: none;
-    }
-
-    .btn {
-      border-radius: var(--radius-pill);
-      border: none;
-      padding: 9px 16px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: transform var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast), color var(--transition-fast);
-      box-shadow: var(--shadow-soft);
-      background: var(--accent);
-      color: #ffffff;
-      white-space: nowrap;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.25);
-    }
-
-    .btn-secondary {
-      background: #ffffff;
-      color: var(--text-main);
-    }
-
-    .btn-danger {
-      background: var(--danger);
-      color: #ffffff;
-    }
-
-    .btn-ghost {
-      background: transparent;
-      box-shadow: none;
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.4);
-    }
-
-    .btn-sm {
-      padding: 6px 10px;
-      font-size: 0.8rem;
-      box-shadow: none;
-    }
-
-    .btn-pill-toggle {
-      background: rgba(255, 255, 255, 0.12);
-      color: #ffffff;
-      border-radius: var(--radius-pill);
-      padding: 6px 10px;
-      font-size: 0.8rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      border: 1px solid rgba(255, 255, 255, 0.35);
-    }
-
-    .btn-pill-toggle input {
-      accent-color: #ffffff;
-    }
-
-    .layout-main {
-      display: grid;
-      grid-template-columns: minmax(0, 2.2fr) minmax(260px, 1.1fr);
-      gap: 16px;
-      align-items: flex-start;
-    }
-
-    @media (max-width: 960px) {
-      .layout-main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-soft);
-      padding: 14px;
-    }
-
-    @media (min-width: 768px) {
-      .card {
-        padding: 18px;
-      }
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
-      flex-wrap: wrap;
-    }
-
-    .card-title {
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-title span.icon {
-      font-size: 1.1rem;
-    }
-
-    .card-subtitle {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .scanner-bar {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .scanner-input {
-      flex: 1 1 160px;
-      min-width: 0;
-    }
-
-    .scanner-input input {
-      width: 100%;
-      padding: 9px 12px;
-      border-radius: var(--radius-pill);
-      border: 1px solid #e5e7eb;
-      outline: none;
-      font-size: 0.9rem;
-    }
-
-    .scanner-input input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(0, 166, 255, 0.2);
-    }
-
-    .scanner-mode {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .scanner-mode select,
-    .scanner-mode input[type="number"] {
-      border-radius: var(--radius-pill);
-      border: 1px solid #e5e7eb;
-      padding: 6px 10px;
-      font-size: 0.8rem;
-      outline: none;
-      background: #ffffff;
-      min-width: 0;
-    }
-
-    .scanner-mode input[type="number"] {
-      width: 70px;
-    }
-
-    .pill-badge {
-      border-radius: var(--radius-pill);
-      padding: 3px 8px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      background: var(--accent-soft);
-      color: var(--accent);
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-      margin-top: 6px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-    }
-
-    thead {
-      background: #f3f4f6;
-    }
-
-    th,
-    td {
-      padding: 8px 6px;
-      text-align: left;
-      border-bottom: 1px solid #e5e7eb;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    th {
-      font-weight: 600;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    td {
-      font-size: 0.82rem;
-    }
-
-    .col-barcode {
-      min-width: 120px;
-      font-family: "Poppins", monospace;
-      font-size: 0.8rem;
-    }
-
-    .col-name {
-      min-width: 160px;
-    }
-
-    .col-stock {
-      text-align: center;
-      min-width: 70px;
-    }
-
-    .col-actions {
-      text-align: right;
-      min-width: 70px;
-    }
-
-    .editable-cell {
-      cursor: text;
-      border-radius: 8px;
-      padding: 4px 6px;
-      transition: background var(--transition-fast), box-shadow var(--transition-fast);
-    }
-
-    .editable-cell:focus {
-      outline: none;
-      background: #e5f4ff;
-      box-shadow: 0 0 0 1px var(--accent);
-    }
-
-    .stock-status-pill {
-      border-radius: var(--radius-pill);
-      padding: 3px 8px;
-      font-size: 0.7rem;
-      font-weight: 500;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      color: #ffffff;
-    }
-
-    .stock-green {
-      background: var(--success);
-    }
-
-    .stock-orange {
-      background: var(--warning);
-    }
-
-    .stock-red {
-      background: var(--danger);
-    }
-
-    .stock-neutral {
-      background: #9ca3af;
-    }
-
-    .bestellijst-card {
-      border-left: 4px solid var(--accent);
-      background: #f0f9ff;
-    }
-
-    .bestellijst-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .bestellijst-list {
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .bestel-item {
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 8px 10px;
-      margin-bottom: 6px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
-    }
-
-    .bestel-main {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .bestel-name {
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    .bestel-barcode {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    .bestel-qty {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--danger);
-    }
-
-    .empty-state {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      padding: 6px 0;
-    }
-
-    .uitgave-card {
-      margin-top: 12px;
-    }
-
-    .uitgave-list {
-      max-height: 260px;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-
-    .uitgave-day {
-      border-radius: 12px;
-      background: #f9fafb;
-      margin-bottom: 6px;
-      overflow: hidden;
-    }
-
-    .uitgave-day-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 10px;
-      cursor: pointer;
-      font-size: 0.8rem;
-      font-weight: 500;
-    }
-
-    .uitgave-day-header span {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .uitgave-day-header .chevron {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .uitgave-day-body {
-      padding: 6px 10px 8px;
-      border-top: 1px solid #e5e7eb;
-      display: none;
-    }
-
-    .uitgave-day-body.open {
-      display: block;
-    }
-
-    .uitgave-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 0.78rem;
-      padding: 2px 0;
-    }
-
-    .uitgave-row-name {
-      flex: 1;
-    }
-
-    .uitgave-row-qty {
-      font-weight: 600;
-    }
-
-    .flash-container {
-      position: fixed;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      max-width: 360px;
-      pointer-events: none;
-    }
-
-    .flash {
-      border-radius: 999px;
-      padding: 8px 12px;
-      font-size: 0.85rem;
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: var(--shadow-soft);
-      animation: slideIn 0.15s ease-out;
-      pointer-events: auto;
-    }
-
-    .flash-success {
-      background: var(--success);
-    }
-
-    .flash-error {
-      background: var(--danger);
-    }
-
-    .flash-info {
-      background: var(--accent);
-    }
-
-    .flash-icon {
-      font-size: 1rem;
-    }
-
-    .flash-message {
-      flex: 1;
-      font-weight: 500;
-    }
-
-    .flash-close {
-      cursor: pointer;
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translate(-50%, -6px);
-      }
-      to {
-        opacity: 1;
-        transform: translate(-50%, 0);
-      }
-    }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
-      padding: 12px;
-    }
-
-    .modal-backdrop.show {
-      display: flex;
-    }
-
-    .modal {
-      background: #ffffff;
-      border-radius: 16px;
-      max-width: 420px;
-      width: 100%;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.35);
-      padding: 16px 16px 14px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-
-    .modal-title {
-      font-size: 1rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .modal-close {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 1.1rem;
-      color: var(--text-muted);
-    }
-
-    .modal-body {
-      font-size: 0.85rem;
-      margin-bottom: 10px;
-    }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 4px;
-      flex-wrap: wrap;
-    }
-
-    .form-row {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      margin-bottom: 8px;
-    }
-
-    .form-row label {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .form-row input {
-      border-radius: 10px;
-      border: 1px solid #e5e7eb;
-      padding: 7px 10px;
-      font-size: 0.85rem;
-      outline: none;
-      width: 100%;
-    }
-
-    .form-row input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(0, 166, 255, 0.15);
-    }
-
-    .badge-small {
-      font-size: 0.7rem;
-      padding: 2px 6px;
-      border-radius: var(--radius-pill);
-      background: #e5e7eb;
-      color: #374151;
-    }
-
-    .muted {
-      color: var(--text-muted);
-    }
-
-    .text-right {
-      text-align: right;
-    }
-
-    .text-center {
-      text-align: center;
-    }
-
-    .mt-4 {
-      margin-top: 4px;
-    }
-
-    .mt-8 {
-      margin-top: 8px;
-    }
-
-    .mt-12 {
-      margin-top: 12px;
-    }
-
-    .scanner-hint {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-
-    @media (max-width: 600px) {
-      .app-header {
-        align-items: flex-start;
-      }
-      .app-title {
-        font-size: 1.3rem;
-      }
-      .card {
-        padding: 14px;
-      }
-      .bestellijst-card {
-        order: -1;
-      }
-    }
-  </style>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AlbertSEIN — Voorraadbeheer (Scan-first)</title>
+<style>
+  :root{
+    --bg0:#0b1220;
+    --bg1:#0f172a;
+    --panel:#ffffff;
+    --panel2:#f8fafc;
+    --line:rgba(15,23,42,.10);
+    --muted:#64748b;
+    --text:#0f172a;
+    --brand:#4f46e5;
+    --brand-soft:#e0e7ff;
+    --brand-strong:#3730a3;
+    --good:#16a34a;
+    --warn:#f59e0b;
+    --bad:#dc2626;
+    --shadow:0 18px 50px rgba(0,0,0,.22);
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    background:
+      radial-gradient(1200px 700px at 20% 10%, rgba(79,70,229,.22), transparent 60%),
+      radial-gradient(900px 600px at 80% 20%, rgba(34,197,94,.10), transparent 55%),
+      radial-gradient(900px 700px at 50% 90%, rgba(245,158,11,.10), transparent 55%),
+      linear-gradient(180deg, var(--bg0), var(--bg1));
+    color:var(--text);
+  }
+
+  .app{
+    max-width:1900px;
+    margin:0 auto;
+    padding:16px;
+    min-height:100%;
+  }
+
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    color:#e2e8f0;
+    font-weight:900;
+    letter-spacing:.2px;
+  }
+  .brand .dot{
+    width:12px;height:12px;border-radius:999px;background:var(--brand);
+    box-shadow:0 0 0 6px rgba(79,70,229,.18);
+  }
+  .top-actions{display:flex; gap:10px; flex-wrap:wrap}
+
+  .grid{
+    display:grid;
+    grid-template-columns: 560px 1fr 560px;
+    gap:16px;
+    align-items:start;
+  }
+
+  .zone{
+    border-radius:22px;
+    padding:14px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.08);
+  }
+
+  .card{
+    background:var(--panel);
+    border-radius:16px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.35);
+  }
+  .cardHeader{
+    padding:14px 16px;
+    font-weight:900;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #ffffff, #fbfdff);
+  }
+  .cardBody{padding:14px 16px}
+
+  .subtle{
+    color:var(--muted);
+    font-weight:700;
+    font-size:12px;
+  }
+
+  .btn{
+    border:0;
+    border-radius:999px;
+    padding:10px 14px;
+    font-weight:900;
+    cursor:pointer;
+    background:#eef2ff;
+    color:var(--brand-strong);
+    transition:transform .05s ease, filter .15s ease;
+    user-select:none;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn.primary{background:var(--brand); color:#fff}
+  .btn.ghost{background:#eef2ff; color:var(--brand-strong)}
+  .btn.danger{background:#fee2e2; color:#991b1b}
+  .btn.dark{background:#0b1220; color:#e2e8f0}
+  .btn.small{padding:8px 12px; font-size:13px}
+  .btn:disabled{opacity:.55; cursor:not-allowed}
+
+  .row{display:flex; gap:10px; flex-wrap:wrap}
+  .row.nowrap{flex-wrap:nowrap}
+  .spacer{flex:1}
+
+  /* Scan anchor */
+  .scanWrap{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .scanInput{
+    width:100%;
+    font-size:34px;
+    padding:18px 18px;
+    border-radius:18px;
+    border:3px solid rgba(79,70,229,.55);
+    font-weight:950;
+    letter-spacing:.2px;
+    outline:none;
+    background:linear-gradient(180deg, #ffffff, #f8fafc);
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  .scanInput.mode-in{
+    border-color:rgba(59,130,246,.8);
+    box-shadow:0 0 0 6px rgba(59,130,246,.18);
+  }
+  .scanInput.mode-out{
+    border-color:rgba(220,38,38,.8);
+    box-shadow:0 0 0 6px rgba(220,38,38,.18);
+  }
+
+  .scanHint{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    color:var(--muted);
+    font-weight:800;
+    font-size:13px;
+  }
+
+  /* Toggle switch (stijl B, medium) */
+  .modeToggleWrap{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .modeLabel{
+    font-size:12px;
+    font-weight:900;
+    color:var(--muted);
+  }
+  .modeToggle{
+    display:flex;
+    border-radius:999px;
+    background:#e5e7eb;
+    padding:4px;
+    gap:4px;
+  }
+  .modeOption{
+    flex:1;
+    border-radius:999px;
+    padding:10px 12px;
+    text-align:center;
+    font-weight:900;
+    font-size:14px;
+    cursor:pointer;
+    user-select:none;
+    color:#0f172a;
+    background:transparent;
+    transition:background .15s ease, color .15s ease;
+  }
+  .modeOption.active-in{
+    background:var(--brand-soft);
+    color:var(--brand-strong);
+  }
+  .modeOption.active-out{
+    background:#fee2e2;
+    color:#b91c1c;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    min-width:160px;
+  }
+  .label{font-size:12px; font-weight:900; color:var(--muted)}
+  .input, .select{
+    width:100%;
+    padding:12px 12px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    font-weight:900;
+    outline:none;
+    background:#fff;
+  }
+  .input:focus, .select:focus{
+    border-color:rgba(79,70,229,.55);
+    box-shadow:0 0 0 5px rgba(79,70,229,.14);
+  }
+  .input.big{
+    font-size:20px;
+    padding:14px 14px;
+    border-width:2px;
+  }
+
+  /* Tables */
+  table{width:100%; border-collapse:collapse}
+  th,td{padding:10px 10px; border-bottom:1px solid var(--line); vertical-align:middle}
+  th{
+    text-align:left;
+    font-size:12px;
+    color:var(--muted);
+    font-weight:950;
+    letter-spacing:.2px;
+    background:linear-gradient(180deg, #ffffff, #fbfdff);
+    position:sticky;
+    top:0;
+    z-index:1;
+  }
+  .tableWrap{
+    border:1px solid var(--line);
+    border-radius:16px;
+    overflow:auto;
+    max-height:62vh;
+    background:#fff;
+  }
+  .edit{
+    width:100%;
+    padding:10px 10px;
+    border-radius:12px;
+    border:1px dashed transparent;
+    font-weight:900;
+    outline:none;
+    background:transparent;
+  }
+  .edit:focus{
+    border-color:rgba(79,70,229,.55);
+    background:#fff;
+    box-shadow:0 0 0 5px rgba(79,70,229,.12);
+  }
+  .num{max-width:120px}
+  .mono{font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1}
+  .muted{color:var(--muted); font-weight:800}
+
+  /* Order list minimal */
+  .orderTop{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    margin-bottom:10px;
+  }
+  .orderCount{
+    font-weight:950;
+    color:#0f172a;
+  }
+  .orderList{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    max-height:70vh;
+    overflow:auto;
+    padding-right:4px;
+  }
+  .orderItem{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 12px;
+    border-radius:14px;
+    background:rgba(255,255,255,.96);
+    border:1px solid var(--line);
+  }
+  .orderItem.checked{opacity:.45}
+  .orderCheck{width:22px;height:22px; cursor:pointer}
+  .orderName{flex:1; font-size:18px; font-weight:950}
+  .orderNeed{font-size:18px; font-weight:950; color:var(--bad)}
+  .help{
+    padding:12px 12px;
+    border-radius:14px;
+    background:#f8fafc;
+    border:1px dashed rgba(15,23,42,.18);
+    color:var(--muted);
+    font-weight:900;
+  }
+
+  /* Log */
+  details.logDay{
+    border:1px solid var(--line);
+    border-radius:14px;
+    overflow:hidden;
+    background:#fff;
+  }
+  details.logDay summary{
+    cursor:pointer;
+    padding:12px 12px;
+    font-weight:950;
+    list-style:none;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(180deg, #ffffff, #fbfdff);
+  }
+  details.logDay summary::-webkit-details-marker{display:none}
+  .logList{padding:10px 12px; display:flex; flex-direction:column; gap:8px}
+  .logItem{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:10px 10px;
+    border-radius:12px;
+    background:#f8fafc;
+    border:1px solid var(--line);
+    font-weight:900;
+  }
+  .logMeta{color:var(--muted); font-weight:850; font-size:12px}
+
+  /* Modal */
+  .modalOverlay{
+    position:fixed; inset:0;
+    background:rgba(2,6,23,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    z-index:50;
+  }
+  .modalOverlay.open{display:flex}
+  .modal{
+    width:min(720px, 100%);
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 30px 80px rgba(0,0,0,.35);
+    border:1px solid rgba(255,255,255,.35);
+    overflow:hidden;
+  }
+  .modalHeader{
+    padding:14px 16px;
+    font-weight:950;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #ffffff, #fbfdff);
+  }
+  .modalBody{padding:14px 16px}
+  .modalFooter{
+    padding:14px 16px;
+    border-top:1px solid var(--line);
+    display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
+    background:#fff;
+  }
+
+  /* Toast */
+  .toasts{
+    position:fixed;
+    right:16px;
+    bottom:16px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:60;
+    max-width:min(520px, calc(100vw - 32px));
+  }
+  .toast{
+    background:#fff;
+    border-radius:16px;
+    border:1px solid var(--line);
+    box-shadow:0 18px 50px rgba(0,0,0,.22);
+    padding:12px 12px;
+    display:flex;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .toast .icon{
+    width:34px;height:34px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:950;
+    color:#fff;
+    flex:0 0 auto;
+  }
+  .toast.success .icon{background:var(--good)}
+  .toast.error .icon{background:var(--bad)}
+  .toast.info .icon{background:var(--brand)}
+  .toastTitle{font-weight:950}
+  .toastMsg{color:var(--muted); font-weight:850; margin-top:2px}
+
+  @media (max-width: 1650px){
+    .grid{grid-template-columns: 1fr}
+    .zone{padding:12px}
+    .tableWrap{max-height:52vh}
+    .orderList{max-height:52vh}
+  }
+</style>
 </head>
+
 <body>
-  <div class="flash-container" id="flashContainer"></div>
-
-  <!-- Add / Unknown product modal -->
-  <div class="modal-backdrop" id="productModalBackdrop">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="productModalTitle">
-      <div class="modal-header">
-        <div class="modal-title" id="productModalTitle">
-          <span id="productModalIcon">➕</span>
-          <span id="productModalTitleText">Nieuw product</span>
-        </div>
-        <button class="modal-close" type="button" id="productModalCloseBtn">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-row">
-          <label for="productBarcodeInput">Barcode</label>
-          <input id="productBarcodeInput" type="text" autocomplete="off" />
-        </div>
-        <div class="form-row">
-          <label for="productNameInput">Productnaam</label>
-          <input id="productNameInput" type="text" autocomplete="off" />
-        </div>
-        <div class="form-row">
-          <label for="productStdStockInput">Standaard voorraad</label>
-          <input id="productStdStockInput" type="number" min="0" step="1" />
-        </div>
-        <div class="form-row">
-          <label for="productCurrentStockInput">Huidige voorraad</label>
-          <input id="productCurrentStockInput" type="number" min="0" step="1" />
-        </div>
-        <div class="scanner-hint" id="productModalHint"></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary btn-sm" type="button" id="productModalCancelBtn">Annuleren</button>
-        <button class="btn btn-sm" type="button" id="productModalSaveBtn">Opslaan</button>
-      </div>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">
+      <div class="dot"></div>
+      <div>AlbertSEIN — Voorraadbeheer</div>
+      <div class="subtle">scan-first • lokaal • voorspelbaar</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn dark small" id="btnExport">Export JSON</button>
+      <button class="btn dark small" id="btnImport">Import JSON</button>
+      <button class="btn dark small" id="btnBackup">Maak backup</button>
+      <button class="btn dark small" id="btnRestore">Herstel backup</button>
     </div>
   </div>
 
-  <!-- Delete confirm modal -->
-  <div class="modal-backdrop" id="deleteModalBackdrop">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="deleteModalTitle">
-      <div class="modal-header">
-        <div class="modal-title" id="deleteModalTitle">
-          <span>🗑️</span>
-          <span>Product verwijderen</span>
+  <div class="grid">
+    <!-- LINKS: Scan & acties -->
+    <div class="zone">
+      <div class="card">
+        <div class="cardHeader">
+          <div>Scan & acties</div>
+          <div class="subtle" id="storageStatus">Opslag: OK</div>
         </div>
-        <button class="modal-close" type="button" id="deleteModalCloseBtn">&times;</button>
-      </div>
-      <div class="modal-body">
-        Weet je zeker dat je dit product wilt verwijderen?
-        <div class="mt-8">
-          <span class="badge-small" id="deleteModalProductInfo"></span>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary btn-sm" type="button" id="deleteModalCancelBtn">Nee</button>
-        <button class="btn btn-danger btn-sm" type="button" id="deleteModalConfirmBtn">Ja, verwijderen</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="app-shell">
-    <header class="app-header">
-      <div class="app-logo">
-        <!-- Inline SEIN logo in AH-stijl -->
-        <svg viewBox="0 0 64 64" aria-hidden="true">
-          <defs>
-            <linearGradient id="seinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#00a6ff" />
-              <stop offset="100%" stop-color="#0078d7" />
-            </linearGradient>
-          </defs>
-          <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#seinGrad)" />
-          <path d="M20 40c1.8 3.5 5.4 6 10.6 6 6.2 0 10.4-3.4 10.4-8.4 0-4.2-2.6-6.5-7.6-7.6l-3.2-.7c-2.8-.6-4-1.5-4-3.1 0-1.9 1.8-3.2 4.6-3.2 2.6 0 4.4.9 5.5 2.8l4.2-2.4C38.9 20 36 18 31 18c-5.7 0-9.8 3.3-9.8 8.1 0 4.1 2.5 6.4 7.4 7.5l3.3.7c3 .7 4.1 1.6 4.1 3.3 0 2-1.9 3.4-4.9 3.4-3 0-5.1-1.2-6.3-3.4L20 40z" fill="#ffffff" />
-          <text x="50%" y="54%" text-anchor="middle" fill="#ffffff" font-size="10" font-family="Poppins, system-ui" font-weight="600">SEIN</text>
-        </svg>
-        <div>
-          <div class="app-title">AlbertSEIN Voorraadbeheer</div>
-          <div class="app-subtitle">Dagelijks voorraadbeheer voor jouw winkel</div>
-        </div>
-      </div>
-      <div style="flex:1"></div>
-      <label class="btn-pill-toggle">
-        <input type="checkbox" id="scannerActiveToggle" checked />
-        Scanner actief
-      </label>
-    </header>
-
-    <div class="top-bar">
-      <div class="search-wrapper">
-        <span class="search-icon">🔎</span>
-        <input id="searchInput" class="search-input" type="text" placeholder="Zoek op productnaam of barcode..." autocomplete="off" />
-      </div>
-      <select id="sortSelect" class="sort-select">
-        <option value="latest">Laatst toegevoegd</option>
-        <option value="az">Alfabetisch A → Z</option>
-      </select>
-      <button class="btn" type="button" id="addProductBtn">Nieuw product</button>
-    </div>
-
-    <main class="layout-main">
-      <!-- Links: voorraad + scanner -->
-      <section class="card">
-        <div class="card-header">
-          <div>
-            <div class="card-title">
-              <span class="icon">📦</span>
-              <span>Voorraad</span>
+        <div class="cardBody">
+          <div class="scanWrap">
+            <input id="scanInput" class="scanInput mode-in" inputmode="numeric" autocomplete="off" spellcheck="false" placeholder="Scan barcode…" />
+            <div class="scanHint">
+              <div class="subtle">Scanner werkt alleen als dit veld focus heeft</div>
             </div>
-            <div class="card-subtitle">Beheer producten, scan barcodes en houd de voorraad bij.</div>
-          </div>
-        </div>
 
-        <div class="scanner-bar">
-          <div class="scanner-input">
-            <input id="scannerInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Scan barcode..." />
-          </div>
-          <div class="scanner-mode">
-            <span>Modus</span>
-            <select id="scanModeSelect">
-              <option value="in">Binnenkomst (+)</option>
-              <option value="out">Uitgave (–)</option>
-            </select>
-          </div>
-          <div class="scanner-mode">
-            <span>Aantal</span>
-            <input id="scanQtyInput" type="number" min="1" step="1" value="1" />
-          </div>
-        </div>
-        <div class="scanner-hint">
-          Scanner: stuur barcode + Enter. Focus op het scanveld is automatisch zolang de scanner actief is.
-        </div>
-
-        <div class="table-wrapper mt-8">
-          <table>
-            <thead>
-              <tr>
-                <th class="col-barcode">Barcode</th>
-                <th class="col-name">Naam</th>
-                <th class="col-stock text-center">Standaard</th>
-                <th class="col-stock text-center">Huidig</th>
-                <th class="col-stock text-center">Status</th>
-                <th class="col-actions text-right">Acties</th>
-              </tr>
-            </thead>
-            <tbody id="productTableBody"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Rechts: bestellijst + uitgave -->
-      <section>
-        <div class="card bestellijst-card">
-          <div class="bestellijst-header">
-            <div>
-              <div class="card-title">
-                <span class="icon">📝</span>
-                <span>Bestellijst</span>
+            <div class="row nowrap">
+              <div class="field" style="min-width:180px">
+                <div class="label">Aantal</div>
+                <input id="qtyInput" class="input big mono" type="number" min="1" step="1" value="1" />
               </div>
-              <div class="card-subtitle">Producten onder de standaardvoorraad.</div>
-            </div>
-            <span class="pill-badge" id="bestellijstCountBadge">0 items</span>
-          </div>
-          <div id="bestellijstList" class="bestellijst-list"></div>
-          <div id="bestellijstEmpty" class="empty-state">Alles op voorraad. 🎉</div>
-        </div>
-
-        <div class="card uitgave-card">
-          <div class="card-header">
-            <div>
-              <div class="card-title">
-                <span class="icon">📅</span>
-                <span>Uitgave overzicht</span>
+              <div class="spacer"></div>
+              <div class="modeToggleWrap" style="min-width:220px">
+                <div class="modeLabel">Scanmodus</div>
+                <div class="modeToggle" id="modeToggle">
+                  <div class="modeOption active-in" data-mode="in">Binnen</div>
+                  <div class="modeOption" data-mode="out">Uit</div>
+                </div>
               </div>
-              <div class="card-subtitle">Per dag inzicht in uitgaande voorraad.</div>
+            </div>
+
+            <div class="row">
+              <button class="btn ghost" id="btnUndo">Undo laatste scan</button>
+              <button class="btn ghost" id="btnFocusScan">Focus scanveld</button>
+              <button class="btn danger" id="btnClearDay">Wis daglog</button>
+            </div>
+
+            <div style="margin-top:6px">
+              <div class="label">Daglog</div>
+              <div id="dayLogWrap" style="display:flex; flex-direction:column; gap:10px; margin-top:8px"></div>
             </div>
           </div>
-          <div id="uitgaveList" class="uitgave-list"></div>
-          <div id="uitgaveEmpty" class="empty-state">Nog geen uitgaven geregistreerd.</div>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
+
+    <!-- MIDDEN: Productbeheer -->
+    <div class="zone">
+      <div class="card">
+        <div class="cardHeader">
+          <div>Productbeheer</div>
+          <div class="row">
+            <button class="btn primary small" id="btnAdd">+ Nieuw product</button>
+          </div>
+        </div>
+        <div class="cardBody">
+          <div class="row nowrap" style="margin-bottom:12px">
+            <div class="field" style="flex:1; min-width:260px">
+              <div class="label">Zoeken (naam, barcode, categorie)</div>
+              <input id="searchInput" class="input big" autocomplete="off" spellcheck="false" placeholder="Zoek…" />
+            </div>
+          </div>
+
+          <div class="tableWrap">
+            <table>
+              <thead>
+                <tr>
+                  <th style="min-width:160px">Barcode</th>
+                  <th style="min-width:260px">Naam</th>
+                  <th style="min-width:180px">Categorie</th>
+                  <th style="min-width:140px">Standaard</th>
+                  <th style="min-width:140px">Huidig</th>
+                  <th style="min-width:120px">Actie</th>
+                </tr>
+              </thead>
+              <tbody id="productTbody"></tbody>
+            </table>
+          </div>
+
+          <div class="subtle" style="margin-top:10px">
+            AI‑categorie: zolang het categorieveld leeg is, past de categorie zich automatisch aan op basis van de naam.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECHTS: Bestellijst -->
+    <div class="zone">
+      <div class="card">
+        <div class="cardHeader">
+          <div>Bestellijst</div>
+          <div class="subtle" id="orderCount">0 te bestellen</div>
+        </div>
+        <div class="cardBody">
+          <div class="orderTop">
+            <button class="btn ghost" id="btnResetOrdered">🔄 Alle vinkjes wissen</button>
+            <div class="spacer"></div>
+            <button class="btn ghost small" id="btnToggleHideChecked">Verberg afgevinkt</button>
+          </div>
+          <div id="orderList" class="orderList"></div>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-  <script>
-    // --- Data & storage ------------------------------------------------------
-    const STORAGE_KEYS = {
-      PRODUCTS: "albertsein_products_v1",
-      MOVEMENTS: "albertsein_movements_v1"
-    };
+<!-- Modal: add/edit product -->
+<div class="modalOverlay" id="modalOverlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modalHeader">
+      <div id="modalTitle">Nieuw product</div>
+      <button class="btn ghost small" id="btnModalClose">Sluiten</button>
+    </div>
+    <div class="modalBody">
+      <div class="row">
+        <div class="field" style="flex:1; min-width:220px">
+          <div class="label">Barcode (uniek)</div>
+          <input id="mBarcode" class="input" autocomplete="off" spellcheck="false" />
+        </div>
+        <div class="field" style="flex:1; min-width:220px">
+          <div class="label">Naam</div>
+          <input id="mName" class="input" autocomplete="off" spellcheck="false" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <div class="field" style="flex:1; min-width:220px">
+          <div class="label">Categorie</div>
+          <input id="mCategory" class="input" autocomplete="off" spellcheck="false" placeholder="Wordt automatisch gekozen tenzij je dit invult" />
+          <div class="subtle" id="mCatHint">AI categorie actief</div>
+        </div>
+        <div class="field" style="min-width:180px">
+          <div class="label">Standaard voorraad</div>
+          <input id="mStandard" class="input mono" type="number" min="0" step="1" value="0" />
+        </div>
+        <div class="field" style="min-width:180px">
+          <div class="label">Huidige voorraad</div>
+          <input id="mCurrent" class="input mono" type="number" min="0" step="1" value="0" />
+        </div>
+      </div>
+    </div>
+    <div class="modalFooter">
+      <button class="btn danger" id="btnModalDelete" style="display:none">Verwijderen</button>
+      <div class="spacer"></div>
+      <button class="btn ghost" id="btnModalCancel">Sluiten</button>
+      <button class="btn primary" id="btnModalSave">Opslaan</button>
+    </div>
+  </div>
+</div>
 
-    let products = [];
-    let movements = [];
+<input type="file" id="fileImport" accept="application/json" style="display:none" />
+<div class="toasts" id="toasts"></div>
 
-    function loadFromStorage() {
-      try {
-        const p = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-        const m = localStorage.getItem(STORAGE_KEYS.MOVEMENTS);
-        products = p ? JSON.parse(p) : [];
-        movements = m ? JSON.parse(m) : [];
-      } catch {
-        products = [];
-        movements = [];
-      }
+<script>
+(() => {
+  "use strict";
+
+  const APP_VERSION = 1;
+  const LS_KEY = "albertsein_state_v1";
+  const LS_BACKUP_KEY = "albertsein_backup_ring_v1";
+  const LS_CAT_LEARN_KEY = "albertsein_cat_learn_v1";
+
+  const el = {
+    storageStatus: document.getElementById("storageStatus"),
+
+    scanInput: document.getElementById("scanInput"),
+    qtyInput: document.getElementById("qtyInput"),
+    modeToggle: document.getElementById("modeToggle"),
+
+    btnUndo: document.getElementById("btnUndo"),
+    btnFocusScan: document.getElementById("btnFocusScan"),
+    btnClearDay: document.getElementById("btnClearDay"),
+    dayLogWrap: document.getElementById("dayLogWrap"),
+
+    searchInput: document.getElementById("searchInput"),
+    productTbody: document.getElementById("productTbody"),
+    btnAdd: document.getElementById("btnAdd"),
+
+    orderCount: document.getElementById("orderCount"),
+    orderList: document.getElementById("orderList"),
+    btnResetOrdered: document.getElementById("btnResetOrdered"),
+    btnToggleHideChecked: document.getElementById("btnToggleHideChecked"),
+
+    btnExport: document.getElementById("btnExport"),
+    btnImport: document.getElementById("btnImport"),
+    btnBackup: document.getElementById("btnBackup"),
+    btnRestore: document.getElementById("btnRestore"),
+    fileImport: document.getElementById("fileImport"),
+
+    modalOverlay: document.getElementById("modalOverlay"),
+    modalTitle: document.getElementById("modalTitle"),
+    btnModalClose: document.getElementById("btnModalClose"),
+    btnModalCancel: document.getElementById("btnModalCancel"),
+    btnModalSave: document.getElementById("btnModalSave"),
+    btnModalDelete: document.getElementById("btnModalDelete"),
+    mBarcode: document.getElementById("mBarcode"),
+    mName: document.getElementById("mName"),
+    mCategory: document.getElementById("mCategory"),
+    mCatHint: document.getElementById("mCatHint"),
+    mStandard: document.getElementById("mStandard"),
+    mCurrent: document.getElementById("mCurrent"),
+
+    toasts: document.getElementById("toasts"),
+  };
+
+  const nowISO = () => new Date().toISOString();
+  const todayKey = () => new Date().toISOString().slice(0,10);
+  const clampInt = (n, min, max) => {
+    const x = Number.isFinite(n) ? Math.trunc(n) : parseInt(n,10);
+    if (!Number.isFinite(x)) return min;
+    return Math.max(min, Math.min(max, x));
+  };
+  const escapeHTML = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+  const safeJSONParse = (s) => { try { return JSON.parse(s); } catch { return null; } };
+  const uid = () => "p_" + Math.random().toString(36).slice(2,10) + "_" + Date.now().toString(36);
+
+  function toast(type, title, msg, ms=2600){
+    const t = document.createElement("div");
+    t.className = `toast ${type}`;
+    t.innerHTML = `
+      <div class="icon">${type === "success" ? "✓" : type === "error" ? "!" : "i"}</div>
+      <div>
+        <div class="toastTitle">${escapeHTML(title)}</div>
+        <div class="toastMsg">${escapeHTML(msg)}</div>
+      </div>
+    `;
+    el.toasts.appendChild(t);
+    setTimeout(() => {
+      t.style.opacity = "0";
+      t.style.transform = "translateY(6px)";
+      t.style.transition = "opacity .2s ease, transform .2s ease";
+      setTimeout(() => t.remove(), 220);
+    }, ms);
+  }
+
+  const baseRules = [
+    { re: /\b(kaas|melk|yoghurt|kwark|boter|room|vla|karnemelk)\b/i, cat:"Zuivel" },
+    { re: /\b(brood|bol|stokbrood|croissant|beschuit)\b/i, cat:"Bakkerij" },
+    { re: /\b(cola|fris|limonade|sap|sinas|fanta|sprite|water|ijstee|energy)\b/i, cat:"Dranken" },
+    { re: /\b(koek|chips|snack|noten|reep|chocolade|drop|snoep)\b/i, cat:"Snacks" },
+    { re: /\b(vlees|kip|gehakt|worst|ham|bacon)\b/i, cat:"Vleeswaren" },
+    { re: /\b(groente|fruit|appel|banaan|tomaat|komkommer|ui|paprika)\b/i, cat:"AGF" },
+    { re: /\b(pasta|rijst|saus|soep|blik|bonen)\b/i, cat:"Kruidenierswaren" },
+    { re: /\b(was|zeep|shampoo|tandpasta|deodorant)\b/i, cat:"Drogisterij" },
+    { re: /\b(koffie|thee)\b/i, cat:"Koffie & thee" },
+  ];
+
+  function loadLearnMap(){
+    const raw = localStorage.getItem(LS_CAT_LEARN_KEY);
+    const obj = safeJSONParse(raw);
+    return (obj && typeof obj === "object") ? obj : {};
+  }
+  function saveLearnMap(map){
+    localStorage.setItem(LS_CAT_LEARN_KEY, JSON.stringify(map));
+  }
+
+  function normalizeCategoryInput(s){
+    const v = String(s ?? "").trim();
+    if (!v) return "";
+    const lower = v.toLowerCase();
+    return lower.charAt(0).toUpperCase() + lower.slice(1);
+  }
+
+  function inferCategoryFromName(name, learnMap){
+    const n = String(name ?? "").trim().toLowerCase();
+    if (!n) return "";
+    const tokens = n.split(/[^a-z0-9à-ÿ]+/i).filter(Boolean);
+    for (const tok of tokens){
+      if (learnMap[tok]) return learnMap[tok];
     }
-
-    function saveProducts() {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+    for (const r of baseRules){
+      if (r.re.test(n)) return r.cat;
     }
+    return "";
+  }
 
-    function saveMovements() {
-      localStorage.setItem(STORAGE_KEYS.MOVEMENTS, JSON.stringify(movements));
+  function learnFromManual(name, category, learnMap){
+    const n = String(name ?? "").trim().toLowerCase();
+    const c = normalizeCategoryInput(category);
+    if (!n || !c) return;
+    const tokens = n.split(/[^a-z0-9à-ÿ]+/i).filter(t => t.length >= 3);
+    for (const tok of tokens.slice(0, 6)){
+      learnMap[tok] = c;
     }
+  }
 
-    function generateId() {
-      return "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 7);
-    }
+  const defaultState = () => ({
+    version: APP_VERSION,
+    mode: "in",
+    products: [],
+    scanHistory: [],
+    dayLog: {},
+    ui: { hideCheckedOrders: false },
+    meta: { lastSavedAt: null, createdAt: nowISO() }
+  });
 
-    function todayISO() {
-      const d = new Date();
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, "0");
-      const day = String(d.getDate()).padStart(2, "0");
-      return `${y}-${m}-${day}`;
-    }
+  let state = defaultState();
+  let learnMap = loadLearnMap();
+  let saveCounter = 0;
 
-    // --- Flash messages ------------------------------------------------------
-    function showFlash(type, message) {
-      const container = document.getElementById("flashContainer");
-      const el = document.createElement("div");
-      el.className = "flash flash-" + type;
-      const icon = document.createElement("div");
-      icon.className = "flash-icon";
-      icon.textContent = type === "success" ? "✔" : type === "error" ? "!" : "ℹ";
-      const msg = document.createElement("div");
-      msg.className = "flash-message";
-      msg.textContent = message;
-      const close = document.createElement("div");
-      close.className = "flash-close";
-      close.textContent = "×";
-      close.addEventListener("click", () => {
-        if (container.contains(el)) container.removeChild(el);
-      });
-      el.appendChild(icon);
-      el.appendChild(msg);
-      el.appendChild(close);
-      container.appendChild(el);
-      setTimeout(() => {
-        if (container.contains(el)) container.removeChild(el);
-      }, 2000);
-    }
+  function normalizeProduct(p){
+    const obj = { ...p };
+    obj.id = String(obj.id || uid());
+    obj.barcode = String(obj.barcode || "").trim();
+    obj.name = String(obj.name || "").trim();
+    obj.category = normalizeCategoryInput(obj.category || "");
+    obj.standard = clampInt(obj.standard ?? 0, 0, 999999);
+    obj.current = clampInt(obj.current ?? 0, 0, 999999);
+    obj.ordered = !!obj.ordered;
+    obj.categoryManual = !!obj.categoryManual;
+    obj.createdAt = obj.createdAt || nowISO();
+    obj.updatedAt = obj.updatedAt || nowISO();
+    return obj;
+  }
 
-    // --- Stock status --------------------------------------------------------
-    function getStockStatus(product) {
-      const std = Number(product.stdStock) || 0;
-      const cur = Number(product.currentStock) || 0;
-      if (std <= 0) {
-        return { label: "Geen standaard", className: "stock-neutral" };
-      }
-      const ratio = cur / std;
-      if (ratio >= 0.9) return { label: "Voldoende", className: "stock-green" };
-      if (ratio >= 0.4) return { label: "Bijna op", className: "stock-orange" };
-      return { label: "Bijna leeg", className: "stock-red" };
-    }
+  function loadState(){
+    const raw = localStorage.getItem(LS_KEY);
+    const parsed = safeJSONParse(raw);
+    if (!parsed) return;
+    const next = defaultState();
+    next.version = APP_VERSION;
+    next.mode = (parsed.mode === "out") ? "out" : "in";
+    next.products = Array.isArray(parsed.products) ? parsed.products.map(normalizeProduct) : [];
+    next.scanHistory = Array.isArray(parsed.scanHistory) ? parsed.scanHistory : [];
+    next.dayLog = (parsed.dayLog && typeof parsed.dayLog === "object") ? parsed.dayLog : {};
+    next.ui = (parsed.ui && typeof parsed.ui === "object") ? { ...next.ui, ...parsed.ui } : next.ui;
+    next.meta = (parsed.meta && typeof parsed.meta === "object") ? { ...next.meta, ...parsed.meta } : next.meta;
+    state = next;
+  }
 
-    // --- Rendering -----------------------------------------------------------
-    const productTableBody = document.getElementById("productTableBody");
-    const bestellijstList = document.getElementById("bestellijstList");
-    const bestellijstEmpty = document.getElementById("bestellijstEmpty");
-    const bestellijstCountBadge = document.getElementById("bestellijstCountBadge");
-    const uitgaveList = document.getElementById("uitgaveList");
-    const uitgaveEmpty = document.getElementById("uitgaveEmpty");
-    const searchInput = document.getElementById("searchInput");
-    const sortSelect = document.getElementById("sortSelect");
+  function saveState(){
+    state.meta.lastSavedAt = nowISO();
+    localStorage.setItem(LS_KEY, JSON.stringify(state));
+    el.storageStatus.textContent = "Opslag: OK";
+  }
 
-    function getFilteredSortedProducts() {
-      const q = searchInput.value.trim().toLowerCase();
-      let list = [...products];
-      if (q) {
-        list = list.filter((p) => {
-          return (
-            (p.name || "").toLowerCase().includes(q) ||
-            (p.barcode || "").toLowerCase().includes(q)
-          );
-        });
-      }
-      const sort = sortSelect.value;
-      if (sort === "az") {
-        list.sort((a, b) => (a.name || "").localeCompare(b.name || "", "nl"));
-      } else {
-        list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-      }
-      return list;
-    }
+  function loadBackupRing(){
+    const raw = localStorage.getItem(LS_BACKUP_KEY);
+    const parsed = safeJSONParse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  }
+  function saveBackupRing(ring){
+    localStorage.setItem(LS_BACKUP_KEY, JSON.stringify(ring));
+  }
+  function makeBackup(reason="auto"){
+    const ring = loadBackupRing();
+    ring.unshift({ at: nowISO(), reason, state });
+    const trimmed = ring.slice(0, 12);
+    saveBackupRing(trimmed);
+  }
 
-    function renderProducts() {
-      const list = getFilteredSortedProducts();
-      productTableBody.innerHTML = "";
-      if (!list.length) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 6;
-        td.className = "text-center muted";
-        td.textContent = "Nog geen producten. Voeg een product toe om te starten.";
-        tr.appendChild(td);
-        productTableBody.appendChild(tr);
-        return;
-      }
+  function saveAll(reason="save"){
+    saveState();
+    saveCounter++;
+    if (saveCounter % 10 === 0) makeBackup("auto");
+  }
 
-      list.forEach((p) => {
-        const tr = document.createElement("tr");
+  function setMode(mode){
+    state.mode = mode === "out" ? "out" : "in";
+    const isOut = state.mode === "out";
+    const opts = el.modeToggle.querySelectorAll(".modeOption");
+    opts.forEach(o => {
+      const m = o.dataset.mode;
+      o.classList.remove("active-in","active-out");
+      if (m === "in" && !isOut) o.classList.add("active-in");
+      if (m === "out" && isOut) o.classList.add("active-out");
+    });
+    el.scanInput.classList.toggle("mode-in", !isOut);
+    el.scanInput.classList.toggle("mode-out", isOut);
+    saveAll("mode");
+  }
 
-        const tdBarcode = document.createElement("td");
-        tdBarcode.className = "col-barcode";
-        tdBarcode.textContent = p.barcode || "";
-        tr.appendChild(tdBarcode);
+  function getFilteredProducts(){
+    const q = String(el.searchInput.value || "").trim().toLowerCase();
+    if (!q) return state.products;
+    return state.products.filter(p => {
+      const hay = `${p.barcode} ${p.name} ${p.category}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }
 
-        const tdName = document.createElement("td");
-        tdName.className = "col-name";
-        const nameDiv = document.createElement("div");
-        nameDiv.className = "editable-cell";
-        nameDiv.contentEditable = "true";
-        nameDiv.textContent = p.name || "";
-        nameDiv.dataset.id = p.id;
-        nameDiv.dataset.field = "name";
-        tdName.appendChild(nameDiv);
-        tr.appendChild(tdName);
+  function renderProducts(){
+    const rows = getFilteredProducts();
+    el.productTbody.innerHTML = rows.map(p => `
+      <tr data-id="${escapeHTML(p.id)}">
+        <td class="mono">${escapeHTML(p.barcode)}</td>
+        <td><input class="edit" data-k="name" value="${escapeHTML(p.name)}" /></td>
+        <td><input class="edit" data-k="category" value="${escapeHTML(p.category)}" /></td>
+        <td><input class="edit mono num" data-k="standard" type="number" min="0" step="1" value="${p.standard}" /></td>
+        <td><input class="edit mono num" data-k="current" type="number" min="0" step="1" value="${p.current}" /></td>
+        <td><button class="btn ghost small" data-act="edit">Bewerk</button></td>
+      </tr>
+    `).join("");
 
-        const tdStd = document.createElement("td");
-        tdStd.className = "col-stock text-center";
-        const stdDiv = document.createElement("div");
-        stdDiv.className = "editable-cell";
-        stdDiv.contentEditable = "true";
-        stdDiv.textContent = p.stdStock != null ? String(p.stdStock) : "0";
-        stdDiv.dataset.id = p.id;
-        stdDiv.dataset.field = "stdStock";
-        tdStd.appendChild(stdDiv);
-        tr.appendChild(tdStd);
+    el.productTbody.querySelectorAll("input.edit").forEach(inp => {
+      inp.addEventListener("change", (e) => {
+        const tr = e.target.closest("tr");
+        const id = tr?.dataset?.id;
+        const k = e.target.dataset.k;
+        const prod = state.products.find(x => x.id === id);
+        if (!prod) return;
 
-        const tdCur = document.createElement("td");
-        tdCur.className = "col-stock text-center";
-        const curDiv = document.createElement("div");
-        curDiv.className = "editable-cell";
-        curDiv.contentEditable = "true";
-        curDiv.textContent = p.currentStock != null ? String(p.currentStock) : "0";
-        curDiv.dataset.id = p.id;
-        curDiv.dataset.field = "currentStock";
-        tdCur.appendChild(curDiv);
-        tr.appendChild(tdCur);
-
-        const tdStatus = document.createElement("td");
-        tdStatus.className = "col-stock text-center";
-        const status = getStockStatus(p);
-        const pill = document.createElement("span");
-        pill.className = "stock-status-pill " + status.className;
-        pill.textContent = status.label;
-        tdStatus.appendChild(pill);
-        tr.appendChild(tdStatus);
-
-        const tdActions = document.createElement("td");
-        tdActions.className = "col-actions text-right";
-        const delBtn = document.createElement("button");
-        delBtn.className = "btn btn-danger btn-sm";
-        delBtn.textContent = "Verwijder";
-        delBtn.dataset.id = p.id;
-        tdActions.appendChild(delBtn);
-        tr.appendChild(tdActions);
-
-        productTableBody.appendChild(tr);
-      });
-    }
-
-    function renderBestellijst() {
-      bestellijstList.innerHTML = "";
-      const items = products
-        .filter((p) => {
-          const std = Number(p.stdStock) || 0;
-          const cur = Number(p.currentStock) || 0;
-          return std > 0 && cur < std;
-        })
-        .sort((a, b) => (a.name || "").localeCompare(b.name || "", "nl"));
-
-      bestellijstCountBadge.textContent = items.length + " items";
-
-      if (!items.length) {
-        bestellijstEmpty.style.display = "block";
-        return;
-      }
-      bestellijstEmpty.style.display = "none";
-
-      items.forEach((p) => {
-        const std = Number(p.stdStock) || 0;
-        const cur = Number(p.currentStock) || 0;
-        const need = std - cur;
-
-        const item = document.createElement("div");
-        item.className = "bestel-item";
-
-        const main = document.createElement("div");
-        main.className = "bestel-main";
-        const name = document.createElement("div");
-        name.className = "bestel-name";
-        name.textContent = p.name || "(naam onbekend)";
-        const bc = document.createElement("div");
-        bc.className = "bestel-barcode";
-        bc.textContent = "Barcode: " + (p.barcode || "-");
-        main.appendChild(name);
-        main.appendChild(bc);
-
-        const qty = document.createElement("div");
-        qty.className = "bestel-qty";
-        qty.textContent = "Bestel: " + need;
-
-        item.appendChild(main);
-        item.appendChild(qty);
-        bestellijstList.appendChild(item);
-      });
-    }
-
-    function renderUitgave() {
-      uitgaveList.innerHTML = "";
-      const outs = movements.filter((m) => m.type === "out");
-      if (!outs.length) {
-        uitgaveEmpty.style.display = "block";
-        return;
-      }
-      uitgaveEmpty.style.display = "none";
-
-      const byDate = {};
-      outs.forEach((m) => {
-        if (!byDate[m.date]) byDate[m.date] = [];
-        byDate[m.date].push(m);
-      });
-
-      const dates = Object.keys(byDate).sort((a, b) => (a < b ? 1 : -1));
-
-      dates.forEach((date) => {
-        const dayMovs = byDate[date];
-
-        const dayEl = document.createElement("div");
-        dayEl.className = "uitgave-day";
-
-        const header = document.createElement("div");
-        header.className = "uitgave-day-header";
-        const left = document.createElement("span");
-        left.textContent = date;
-        const right = document.createElement("span");
-        const totalQty = dayMovs.reduce((sum, m) => sum + Number(m.qty || 0), 0);
-        right.innerHTML = `<span class="badge-small">Totaal: ${totalQty}</span> <span class="chevron">▼</span>`;
-        header.appendChild(left);
-        header.appendChild(right);
-
-        const body = document.createElement("div");
-        body.className = "uitgave-day-body";
-
-        dayMovs.forEach((m) => {
-          const row = document.createElement("div");
-          row.className = "uitgave-row";
-          const name = document.createElement("div");
-          name.className = "uitgave-row-name";
-          name.textContent = m.name || "(naam onbekend)";
-          const qty = document.createElement("div");
-          qty.className = "uitgave-row-qty";
-          qty.textContent = "-" + m.qty;
-          row.appendChild(name);
-          row.appendChild(qty);
-          body.appendChild(row);
-        });
-
-        header.addEventListener("click", () => {
-          body.classList.toggle("open");
-        });
-
-        dayEl.appendChild(header);
-        dayEl.appendChild(body);
-        uitgaveList.appendChild(dayEl);
-      });
-    }
-
-    function renderAll() {
-      renderProducts();
-      renderBestellijst();
-      renderUitgave();
-    }
-
-    // --- Modals --------------------------------------------------------------
-    const productModalBackdrop = document.getElementById("productModalBackdrop");
-    const productModalCloseBtn = document.getElementById("productModalCloseBtn");
-    const productModalCancelBtn = document.getElementById("productModalCancelBtn");
-    const productModalSaveBtn = document.getElementById("productModalSaveBtn");
-    const productModalTitleText = document.getElementById("productModalTitleText");
-    const productModalIcon = document.getElementById("productModalIcon");
-    const productModalHint = document.getElementById("productModalHint");
-    const productBarcodeInput = document.getElementById("productBarcodeInput");
-    const productNameInput = document.getElementById("productNameInput");
-    const productStdStockInput = document.getElementById("productStdStockInput");
-    const productCurrentStockInput = document.getElementById("productCurrentStockInput");
-
-    let productModalContext = {
-      mode: "add",
-      barcode: "",
-      applyScanAfterAdd: null
-    };
-
-    function openProductModal(options = {}) {
-      const { mode = "add", barcode = "", applyScanAfterAdd = null } = options;
-      productModalContext.mode = mode;
-      productModalContext.barcode = barcode || "";
-      productModalContext.applyScanAfterAdd = applyScanAfterAdd;
-
-      if (mode === "unknown") {
-        productModalTitleText.textContent = "Product niet herkend";
-        productModalIcon.textContent = "❓";
-        productModalHint.textContent =
-          "Deze barcode is niet bekend. Voeg het product toe om de scan te verwerken.";
-      } else {
-        productModalTitleText.textContent = "Nieuw product";
-        productModalIcon.textContent = "➕";
-        productModalHint.textContent = "";
-      }
-
-      productBarcodeInput.value = barcode || "";
-      productBarcodeInput.readOnly = !!barcode;
-      productNameInput.value = "";
-      productStdStockInput.value = "0";
-      productCurrentStockInput.value = "0";
-
-      productModalBackdrop.classList.add("show");
-
-      setTimeout(() => {
-        if (!barcode) {
-          productBarcodeInput.focus();
-        } else {
-          productNameInput.focus();
+        if (k === "name"){
+          prod.name = String(e.target.value || "").trim();
+          prod.updatedAt = nowISO();
+          if (!prod.categoryManual){
+            const inferred = inferCategoryFromName(prod.name, learnMap);
+            prod.category = normalizeCategoryInput(inferred || prod.category);
+          }
+          saveAll("edit-name");
+          renderProducts();
+          renderOrders();
+          return;
         }
-      }, 30);
-    }
 
-    function closeProductModal() {
-      productModalBackdrop.classList.remove("show");
-      // Na sluiten: scanner weer actief maken als toggle aan staat
-      if (scannerActiveToggle.checked) {
-        scannerInput.focus();
-      }
-    }
+        if (k === "category"){
+          const raw = String(e.target.value || "").trim();
+          if (raw){
+            prod.categoryManual = true;
+            prod.category = normalizeCategoryInput(raw);
+            learnFromManual(prod.name, prod.category, learnMap);
+            saveLearnMap(learnMap);
+          } else {
+            prod.categoryManual = false;
+            const inferred = inferCategoryFromName(prod.name, learnMap);
+            prod.category = normalizeCategoryInput(inferred);
+          }
+          prod.updatedAt = nowISO();
+          saveAll("edit-category");
+          renderProducts();
+          renderOrders();
+          return;
+        }
 
-    productModalCloseBtn.addEventListener("click", closeProductModal);
-    productModalCancelBtn.addEventListener("click", closeProductModal);
+        if (k === "standard"){
+          prod.standard = clampInt(parseInt(e.target.value,10), 0, 999999);
+          prod.updatedAt = nowISO();
+          saveAll("edit-standard");
+          renderOrders();
+          return;
+        }
 
-    productModalBackdrop.addEventListener("click", (e) => {
-      if (e.target === productModalBackdrop) {
-        closeProductModal();
-      }
+        if (k === "current"){
+          prod.current = clampInt(parseInt(e.target.value,10), 0, 999999);
+          prod.updatedAt = nowISO();
+          saveAll("edit-current");
+          renderOrders();
+          return;
+        }
+      });
+
+      inp.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") e.target.blur();
+      });
     });
 
-    productModalSaveBtn.addEventListener("click", () => {
-      const barcode = productBarcodeInput.value.trim();
-      const name = productNameInput.value.trim();
-      const stdStock = Number(productStdStockInput.value || 0);
-      const currentStock = Number(productCurrentStockInput.value || 0);
+    el.productTbody.querySelectorAll('button[data-act="edit"]').forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const id = e.target.closest("tr")?.dataset?.id;
+        const prod = state.products.find(x => x.id === id);
+        if (!prod) return;
+        openModal("edit", prod);
+      });
+    });
+  }
 
-      if (!barcode) {
-        showFlash("error", "Barcode is verplicht.");
-        productBarcodeInput.focus();
-        return;
-      }
-      if (!name) {
-        showFlash("error", "Productnaam is verplicht.");
-        productNameInput.focus();
-        return;
-      }
-      if (products.some((p) => p.barcode === barcode)) {
-        showFlash("error", "Er bestaat al een product met deze barcode.");
-        return;
-      }
+  function computeOrderItems(){
+    return state.products
+      .map(p => ({ p, need: Math.max(0, (p.standard||0) - (p.current||0)) }))
+      .filter(x => x.need > 0)
+      .sort((a,b) => (b.need - a.need) || a.p.name.localeCompare(b.p.name, "nl"));
+  }
 
-      const product = {
-        id: generateId(),
+  function renderOrders(){
+    const items = computeOrderItems();
+    el.orderCount.textContent = `${items.length} te bestellen`;
+
+    const hideChecked = !!state.ui.hideCheckedOrders;
+    el.btnToggleHideChecked.textContent = hideChecked ? "Toon alles" : "Verberg afgevinkt";
+
+    if (items.length === 0){
+      el.orderList.innerHTML = `<div class="help">Alles is op peil.</div>`;
+      return;
+    }
+
+    const visible = hideChecked ? items.filter(x => !x.p.ordered) : items;
+    if (visible.length === 0){
+      el.orderList.innerHTML = `<div class="help">Alles is afgevinkt. Zet “Toon alles” aan of reset de vinkjes.</div>`;
+      return;
+    }
+
+    el.orderList.innerHTML = visible.map(({p, need}) => `
+      <div class="orderItem ${p.ordered ? "checked" : ""}">
+        <input type="checkbox" class="orderCheck" data-id="${escapeHTML(p.id)}" ${p.ordered ? "checked" : ""} />
+        <div class="orderName">${escapeHTML(p.name || "(zonder naam)")}</div>
+        <div class="orderNeed">BESTEL: ${need}</div>
+      </div>
+    `).join("");
+
+    el.orderList.querySelectorAll(".orderCheck").forEach(cb => {
+      cb.addEventListener("change", (e) => {
+        const id = e.target.dataset.id;
+        const prod = state.products.find(p => p.id === id);
+        if (!prod) return;
+        prod.ordered = e.target.checked;
+        saveAll("ordered");
+        renderOrders();
+      });
+    });
+  }
+
+  function renderDayLog(){
+    const days = Object.keys(state.dayLog || {}).sort((a,b) => b.localeCompare(a));
+    if (days.length === 0){
+      el.dayLogWrap.innerHTML = `<div class="help">Nog geen scans vandaag.</div>`;
+      return;
+    }
+    el.dayLogWrap.innerHTML = days.map(day => {
+      const list = Array.isArray(state.dayLog[day]) ? state.dayLog[day] : [];
+      const outCount = list.filter(x => x.dir === "out").length;
+      const inCount = list.filter(x => x.dir === "in").length;
+      return `
+        <details class="logDay" ${day === todayKey() ? "open" : ""}>
+          <summary>
+            <span>${escapeHTML(day)}</span>
+            <span class="logMeta">in: ${inCount} • uit: ${outCount} • totaal: ${list.length}</span>
+          </summary>
+          <div class="logList">
+            ${list.slice().reverse().map(item => `
+              <div class="logItem">
+                <div>
+                  <div>${escapeHTML(item.name || item.barcode)}</div>
+                  <div class="logMeta">${escapeHTML(item.time)} • ${item.dir === "out" ? "uit" : item.dir === "in" ? "in" : "undo"} • aantal: ${item.qty}</div>
+                </div>
+                <div class="mono">${escapeHTML(item.barcode)}</div>
+              </div>
+            `).join("")}
+          </div>
+        </details>
+      `;
+    }).join("");
+  }
+
+  function renderAll(){
+    setMode(state.mode);
+    renderProducts();
+    renderOrders();
+    renderDayLog();
+  }
+
+  let modalMode = "add";
+  let modalProductId = null;
+
+  function openModal(mode, product=null, presetBarcode=""){
+    modalMode = mode;
+    modalProductId = product?.id || null;
+
+    el.modalTitle.textContent = mode === "edit" ? "Product bewerken" : "Nieuw product";
+    el.btnModalDelete.style.display = mode === "edit" ? "inline-flex" : "none";
+
+    const p = product ? normalizeProduct(product) : null;
+
+    el.mBarcode.value = p ? p.barcode : (presetBarcode || "");
+    el.mName.value = p ? p.name : "";
+    el.mStandard.value = p ? p.standard : 0;
+    el.mCurrent.value = p ? p.current : 0;
+
+    if (p){
+      el.mCategory.value = p.category || "";
+      el.mCatHint.textContent = p.categoryManual ? "Handmatig (AI uit)" : "AI categorie actief";
+    } else {
+      el.mCategory.value = "";
+      el.mCatHint.textContent = "AI categorie actief";
+    }
+
+    el.modalOverlay.classList.add("open");
+    el.modalOverlay.setAttribute("aria-hidden", "false");
+
+    setTimeout(() => {
+      if (!el.mBarcode.value) el.mBarcode.focus();
+      else el.mName.focus();
+    }, 0);
+  }
+
+  function closeModal({focusScan=true}={}){
+    el.modalOverlay.classList.remove("open");
+    el.modalOverlay.setAttribute("aria-hidden", "true");
+    modalMode = "add";
+    modalProductId = null;
+    if (focusScan) setTimeout(() => el.scanInput.focus(), 0);
+  }
+
+  function modalUpdateCatHint(){
+    const cat = String(el.mCategory.value || "").trim();
+    el.mCatHint.textContent = cat ? "Handmatig (AI uit)" : "AI categorie actief";
+  }
+
+  function validateBarcodeUnique(barcode, ignoreId=null){
+    const b = String(barcode || "").trim();
+    if (!b) return { ok:false, msg:"Barcode is verplicht." };
+    const exists = state.products.some(p => p.barcode === b && p.id !== ignoreId);
+    if (exists) return { ok:false, msg:"Deze barcode bestaat al." };
+    return { ok:true, msg:"" };
+  }
+
+  function saveModal(){
+    const barcode = String(el.mBarcode.value || "").trim();
+    const name = String(el.mName.value || "").trim();
+    const catRaw = String(el.mCategory.value || "").trim();
+    const standard = clampInt(parseInt(el.mStandard.value,10), 0, 999999);
+    const current = clampInt(parseInt(el.mCurrent.value,10), 0, 999999);
+
+    const ignoreId = modalMode === "edit" ? modalProductId : null;
+    const v = validateBarcodeUnique(barcode, ignoreId);
+    if (!v.ok){
+      toast("error","Niet opgeslagen", v.msg);
+      return;
+    }
+
+    let categoryManual = false;
+    let category = "";
+
+    if (catRaw){
+      categoryManual = true;
+      category = normalizeCategoryInput(catRaw);
+    } else {
+      categoryManual = false;
+      category = normalizeCategoryInput(inferCategoryFromName(name, learnMap));
+    }
+
+    if (modalMode === "add"){
+      const prod = normalizeProduct({
+        id: uid(),
         barcode,
         name,
-        stdStock: isNaN(stdStock) ? 0 : stdStock,
-        currentStock: isNaN(currentStock) ? 0 : currentStock,
-        createdAt: Date.now()
-      };
-      products.push(product);
-      saveProducts();
+        category,
+        categoryManual,
+        standard,
+        current,
+        ordered:false,
+        createdAt: nowISO(),
+        updatedAt: nowISO(),
+      });
 
-      if (productModalContext.applyScanAfterAdd) {
-        const { mode, qty } = productModalContext.applyScanAfterAdd;
-        applyScanToProduct(product, mode, qty, { fromUnknownFlow: true });
+      if (categoryManual){
+        learnFromManual(prod.name, prod.category, learnMap);
+        saveLearnMap(learnMap);
       }
 
-      showFlash("success", "Product opgeslagen.");
-      closeProductModal();
+      state.products.unshift(prod);
+      saveAll("add-product");
       renderAll();
-    });
 
-    // Delete modal
-    const deleteModalBackdrop = document.getElementById("deleteModalBackdrop");
-    const deleteModalCloseBtn = document.getElementById("deleteModalCloseBtn");
-    const deleteModalCancelBtn = document.getElementById("deleteModalCancelBtn");
-    const deleteModalConfirmBtn = document.getElementById("deleteModalConfirmBtn");
-    const deleteModalProductInfo = document.getElementById("deleteModalProductInfo");
+      toast("success","Product toegevoegd", `${prod.name || prod.barcode} is opgeslagen.`);
 
-    let deleteTargetId = null;
-
-    function openDeleteModal(product) {
-      deleteTargetId = product.id;
-      deleteModalProductInfo.textContent = `${product.name || ""} (${product.barcode || ""})`;
-      deleteModalBackdrop.classList.add("show");
+      // Modal blijft open: velden resetten voor volgende product
+      el.mBarcode.value = "";
+      el.mName.value = "";
+      if (!categoryManual){
+        el.mCategory.value = "";
+        el.mCatHint.textContent = "AI categorie actief";
+      }
+      el.mStandard.value = 0;
+      el.mCurrent.value = 0;
+      el.mBarcode.focus();
+      return;
     }
 
-    function closeDeleteModal() {
-      deleteModalBackdrop.classList.remove("show");
-      deleteTargetId = null;
-      if (scannerActiveToggle.checked) {
-        scannerInput.focus();
-      }
+    const prod = state.products.find(p => p.id === modalProductId);
+    if (!prod){
+      toast("error","Niet opgeslagen","Product niet gevonden.");
+      return;
     }
 
-    deleteModalCloseBtn.addEventListener("click", closeDeleteModal);
-    deleteModalCancelBtn.addEventListener("click", closeDeleteModal);
+    prod.barcode = barcode;
+    prod.name = name;
+    prod.standard = standard;
+    prod.current = current;
 
-    deleteModalBackdrop.addEventListener("click", (e) => {
-      if (e.target === deleteModalBackdrop) {
-        closeDeleteModal();
-      }
-    });
-
-    deleteModalConfirmBtn.addEventListener("click", () => {
-      if (!deleteTargetId) return;
-      const idx = products.findIndex((p) => p.id === deleteTargetId);
-      if (idx >= 0) {
-        products.splice(idx, 1);
-        saveProducts();
-        showFlash("success", "Product verwijderd.");
-        renderAll();
-      }
-      closeDeleteModal();
-    });
-
-    // --- Scanner logic -------------------------------------------------------
-    const scannerInput = document.getElementById("scannerInput");
-    const scanModeSelect = document.getElementById("scanModeSelect");
-    const scanQtyInput = document.getElementById("scanQtyInput");
-    const scannerActiveToggle = document.getElementById("scannerActiveToggle");
-
-    function applyScanToProduct(product, mode, qty) {
-      const q = Number(qty) || 1;
-      if (mode === "in") {
-        product.currentStock = Number(product.currentStock || 0) + q;
-        saveProducts();
-        showFlash("success", `+${q} bij ${product.name || product.barcode}`);
-      } else {
-        const cur = Number(product.currentStock || 0);
-        if (cur < q) {
-          showFlash("error", "Onvoldoende voorraad.");
-          return;
-        }
-        product.currentStock = cur - q;
-        saveProducts();
-        movements.push({
-          date: todayISO(),
-          type: "out",
-          barcode: product.barcode,
-          name: product.name,
-          qty: q,
-          timestamp: Date.now()
-        });
-        saveMovements();
-        showFlash("info", `-${q} bij ${product.name || product.barcode}`);
-      }
-      renderBestellijst();
-      renderUitgave();
-      renderProducts();
+    if (catRaw){
+      prod.categoryManual = true;
+      prod.category = normalizeCategoryInput(catRaw);
+      learnFromManual(prod.name, prod.category, learnMap);
+      saveLearnMap(learnMap);
+    } else {
+      prod.categoryManual = false;
+      prod.category = normalizeCategoryInput(inferCategoryFromName(prod.name, learnMap));
     }
 
-    function handleScan(barcodeRaw) {
-      const barcode = barcodeRaw.trim();
-      if (!barcode) return;
-
-      const mode = scanModeSelect.value;
-      const qty = Number(scanQtyInput.value || 1);
-      if (qty <= 0) {
-        showFlash("error", "Aantal moet minimaal 1 zijn.");
-        return;
-      }
-
-      const product = products.find((p) => p.barcode === barcode);
-      if (!product) {
-        showFlash("error", "Product niet herkend.");
-        openProductModal({
-          mode: "unknown",
-          barcode,
-          applyScanAfterAdd: { mode, qty }
-        });
-        return;
-      }
-
-      if (mode === "out") {
-        const cur = Number(product.currentStock || 0);
-        if (cur < qty) {
-          showFlash("error", "Onvoldoende voorraad.");
-          return;
-        }
-      }
-
-      applyScanToProduct(product, mode, qty);
-    }
-
-    // Scanner input: Enter
-    scannerInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        const value = scannerInput.value;
-        scannerInput.value = "";
-        handleScan(value);
-        if (scannerActiveToggle.checked) {
-          scannerInput.focus();
-        }
-      }
-    });
-
-    // Scanner toggle: focus when turned on
-    scannerActiveToggle.addEventListener("change", () => {
-      if (scannerActiveToggle.checked) {
-        scannerInput.focus();
-      }
-    });
-
-    // Slimme focusstrategie:
-    // - Scanner krijgt focus bij start en na scans/modals als scanner actief is.
-    // - We stelen geen focus als gebruiker in andere velden typt.
-    window.addEventListener("load", () => {
-      if (scannerActiveToggle.checked) {
-        scannerInput.focus();
-      }
-    });
-
-    // Extra: als scanner actief is en de body de focus heeft (typisch bij scanners),
-    // stuur key events naar het scanveld zodat je niet hoeft te klikken.
-    document.addEventListener("keydown", (e) => {
-      if (!scannerActiveToggle.checked) return;
-
-      const target = e.target;
-      const isEditable =
-        target.tagName === "INPUT" ||
-        target.tagName === "TEXTAREA" ||
-        target.isContentEditable;
-
-      if (isEditable && target !== scannerInput) {
-        // Gebruiker is bewust ergens anders aan het typen
-        return;
-      }
-
-      // Als focus op body/document staat, stuur naar scannerInput
-      if (!isEditable && e.key.length === 1 || e.key === "Enter" || e.key === "Backspace") {
-        if (document.activeElement !== scannerInput) {
-          scannerInput.focus();
-        }
-      }
-    });
-
-    // --- Inline editing ------------------------------------------------------
-    productTableBody.addEventListener("focusout", (e) => {
-      const target = e.target;
-      if (!target.classList.contains("editable-cell")) return;
-      const id = target.dataset.id;
-      const field = target.dataset.field;
-      const product = products.find((p) => p.id === id);
-      if (!product) return;
-
-      const value = target.textContent.trim();
-      if (field === "name") {
-        product.name = value;
-      } else if (field === "stdStock") {
-        const num = Number(value.replace(",", "."));
-        if (isNaN(num) || num < 0) {
-          target.textContent = product.stdStock != null ? String(product.stdStock) : "0";
-          showFlash("error", "Standaard voorraad moet een positief getal zijn.");
-          return;
-        }
-        product.stdStock = num;
-      } else if (field === "currentStock") {
-        const num = Number(value.replace(",", "."));
-        if (isNaN(num) || num < 0) {
-          target.textContent = product.currentStock != null ? String(product.currentStock) : "0";
-          showFlash("error", "Huidige voorraad moet een positief getal zijn.");
-          return;
-        }
-        product.currentStock = num;
-      }
-      saveProducts();
-      renderBestellijst();
-      renderProducts();
-    });
-
-    productTableBody.addEventListener("keydown", (e) => {
-      const target = e.target;
-      if (!target.classList.contains("editable-cell")) return;
-      if (e.key === "Enter") {
-        e.preventDefault();
-        target.blur();
-      }
-    });
-
-    // Delete button
-    productTableBody.addEventListener("click", (e) => {
-      const btn = e.target.closest("button");
-      if (!btn) return;
-      const id = btn.dataset.id;
-      if (!id) return;
-      const product = products.find((p) => p.id === id);
-      if (!product) return;
-      openDeleteModal(product);
-    });
-
-    // --- Search & sort -------------------------------------------------------
-    let searchTimeout = null;
-    searchInput.addEventListener("input", () => {
-      if (searchTimeout) clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        renderProducts();
-      }, 120);
-    });
-
-    sortSelect.addEventListener("change", () => {
-      renderProducts();
-    });
-
-    // --- Add product button --------------------------------------------------
-    const addProductBtn = document.getElementById("addProductBtn");
-    addProductBtn.addEventListener("click", () => {
-      openProductModal({ mode: "add" });
-    });
-
-    // --- Init ----------------------------------------------------------------
-    loadFromStorage();
+    prod.updatedAt = nowISO();
+    saveAll("edit-product");
     renderAll();
-  </script>
+
+    toast("success","Opgeslagen","Wijzigingen zijn opgeslagen.");
+  }
+
+  function deleteModalProduct(){
+    if (modalMode !== "edit" || !modalProductId) return;
+    const idx = state.products.findIndex(p => p.id === modalProductId);
+    if (idx < 0){
+      toast("error","Niet verwijderd","Product niet gevonden.");
+      return;
+    }
+    const name = state.products[idx].name || state.products[idx].barcode;
+    state.products.splice(idx,1);
+    saveAll("delete-product");
+    renderAll();
+    toast("success","Verwijderd", `${name} is verwijderd.`);
+  }
+
+  function beep(type="ok"){
+    try{
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.type = "sine";
+      o.frequency.value = type === "ok" ? 880 : 220;
+      g.gain.value = 0.06;
+      o.connect(g); g.connect(ctx.destination);
+      o.start();
+      setTimeout(() => { o.stop(); ctx.close(); }, 90);
+    }catch{}
+  }
+
+  function logScan({barcode, name, dir, qty}){
+    const day = todayKey();
+    if (!state.dayLog[day]) state.dayLog[day] = [];
+    const t = new Date();
+    const time = t.toTimeString().slice(0,5);
+    state.dayLog[day].push({ at: nowISO(), time, barcode, name, dir, qty });
+  }
+
+  function applyScan(barcode, qty){
+    const code = String(barcode || "").trim();
+    const q = clampInt(qty, 1, 9999);
+    const prod = state.products.find(p => p.barcode === code);
+    if (!prod){
+      toast("info","Onbekende barcode","Voeg dit product toe.");
+      openModal("add", null, code);
+      return;
+    }
+
+    const dir = state.mode;
+    const before = prod.current;
+
+    if (dir === "in"){
+      prod.current = clampInt(prod.current + q, 0, 999999);
+    } else {
+      if (prod.current - q < 0){
+        beep("bad");
+        toast("error","Onvoldoende voorraad", `${prod.name || prod.barcode}: huidig ${before}, uit ${q}.`);
+        return;
+      }
+      prod.current = clampInt(prod.current - q, 0, 999999);
+    }
+
+    prod.updatedAt = nowISO();
+
+    state.scanHistory.push({
+      at: nowISO(),
+      productId: prod.id,
+      barcode: prod.barcode,
+      name: prod.name,
+      dir,
+      qty: q,
+      before,
+      after: prod.current
+    });
+    state.scanHistory = state.scanHistory.slice(-50);
+
+    logScan({ barcode: prod.barcode, name: prod.name, dir, qty: q });
+
+    saveAll("scan");
+    renderOrders();
+    renderProducts();
+    renderDayLog();
+
+    beep("ok");
+    toast("success", dir === "in" ? "Binnen geboekt" : "Uit geboekt", `${prod.name || prod.barcode} • aantal ${q}`);
+  }
+
+  function undoLastScan(){
+    const last = state.scanHistory.pop();
+    if (!last){
+      toast("info","Undo","Geen scan om terug te draaien.");
+      return;
+    }
+    const prod = state.products.find(p => p.id === last.productId);
+    if (!prod){
+      toast("error","Undo mislukt","Product niet gevonden.");
+      saveAll("undo-fail");
+      return;
+    }
+    prod.current = clampInt(last.before, 0, 999999);
+    prod.updatedAt = nowISO();
+
+    const day = todayKey();
+    if (!state.dayLog[day]) state.dayLog[day] = [];
+    const t = new Date();
+    const time = t.toTimeString().slice(0,5);
+    state.dayLog[day].push({
+      at: nowISO(),
+      time,
+      barcode: prod.barcode,
+      name: prod.name,
+      dir: "undo",
+      qty: last.qty
+    });
+
+    saveAll("undo");
+    renderAll();
+    toast("success","Undo", `${prod.name || prod.barcode} teruggezet.`);
+  }
+
+  function exportJSON(){
+    const payload = {
+      exportedAt: nowISO(),
+      appVersion: APP_VERSION,
+      state,
+      learnMap
+    };
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `albertsein_export_${todayKey()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 500);
+    toast("success","Export gemaakt","JSON export is gedownload.");
+  }
+
+  function importJSONFile(file){
+    const reader = new FileReader();
+    reader.onload = () => {
+      const parsed = safeJSONParse(reader.result);
+      if (!parsed){
+        toast("error","Import mislukt","Bestand is geen geldige JSON.");
+        return;
+      }
+      makeBackup("pre-import");
+
+      const incomingState = parsed.state && typeof parsed.state === "object" ? parsed.state : parsed;
+      const incomingLearn = parsed.learnMap && typeof parsed.learnMap === "object" ? parsed.learnMap : null;
+
+      const next = defaultState();
+      next.mode = (incomingState.mode === "out") ? "out" : "in";
+      next.products = Array.isArray(incomingState.products) ? incomingState.products.map(normalizeProduct) : [];
+      next.scanHistory = Array.isArray(incomingState.scanHistory) ? incomingState.scanHistory : [];
+      next.dayLog = (incomingState.dayLog && typeof incomingState.dayLog === "object") ? incomingState.dayLog : {};
+      next.ui = (incomingState.ui && typeof incomingState.ui === "object") ? { ...next.ui, ...incomingState.ui } : next.ui;
+      next.meta = { ...next.meta, importedAt: nowISO() };
+
+      next.products.forEach(p => {
+        if (!p.categoryManual){
+          const inferred = inferCategoryFromName(p.name, learnMap);
+          if (inferred) p.category = normalizeCategoryInput(inferred);
+        } else {
+          p.category = normalizeCategoryInput(p.category);
+        }
+        if (p.ordered == null) p.ordered = false;
+      });
+
+      state = next;
+
+      if (incomingLearn){
+        learnMap = incomingLearn;
+        saveLearnMap(learnMap);
+      }
+
+      saveAll("import");
+      renderAll();
+      toast("success","Import gelukt","Gegevens zijn ingeladen.");
+      el.scanInput.focus();
+    };
+    reader.readAsText(file);
+  }
+
+  function manualBackup(){
+    makeBackup("manual");
+    toast("success","Backup gemaakt","Je kunt nu altijd herstellen via ‘Herstel backup’.");
+  }
+
+  function restoreBackup(){
+    const ring = loadBackupRing();
+    if (!ring.length){
+      toast("info","Geen backups","Er is nog geen backup beschikbaar.");
+      return;
+    }
+    const latest = ring[0];
+    if (!latest?.state){
+      toast("error","Herstel mislukt","Backup is ongeldig.");
+      return;
+    }
+    makeBackup("pre-restore");
+    state = latest.state;
+    state.products = Array.isArray(state.products) ? state.products.map(normalizeProduct) : [];
+    saveAll("restore");
+    renderAll();
+    toast("success","Hersteld", `Backup hersteld (${latest.reason}).`);
+    el.scanInput.focus();
+  }
+
+  function storageHealthCheck(){
+    try{
+      const testKey = "__albertsein_test__";
+      localStorage.setItem(testKey, "1");
+      localStorage.removeItem(testKey);
+      el.storageStatus.textContent = "Opslag: OK";
+    }catch{
+      el.storageStatus.textContent = "Opslag: PROBLEEM";
+      toast("error","Opslag probleem","LocalStorage lijkt niet beschikbaar. Exporteer direct je data.");
+    }
+  }
+
+  function setupEvents(){
+    el.modeToggle.querySelectorAll(".modeOption").forEach(opt => {
+      opt.addEventListener("click", () => {
+        const m = opt.dataset.mode;
+        setMode(m);
+      });
+    });
+
+    el.btnFocusScan.addEventListener("click", () => el.scanInput.focus());
+
+    el.scanInput.addEventListener("keydown", (e) => {
+      if (e.key !== "Enter") return;
+      const code = String(el.scanInput.value || "").trim();
+      if (!code) return;
+      const qty = clampInt(parseInt(el.qtyInput.value,10), 1, 9999);
+      el.scanInput.value = "";
+      applyScan(code, qty);
+    });
+
+    el.qtyInput.addEventListener("change", () => {
+      el.qtyInput.value = String(clampInt(parseInt(el.qtyInput.value,10), 1, 9999));
+      saveAll("qty");
+    });
+
+    el.btnUndo.addEventListener("click", undoLastScan);
+
+    el.btnClearDay.addEventListener("click", () => {
+      const day = todayKey();
+      if (state.dayLog?.[day]){
+        delete state.dayLog[day];
+        saveAll("clear-daylog");
+        renderDayLog();
+        toast("success","Daglog gewist","Vandaag is leeggemaakt.");
+      } else {
+        toast("info","Daglog","Vandaag is al leeg.");
+      }
+      el.scanInput.focus();
+    });
+
+    el.searchInput.addEventListener("input", () => renderProducts());
+
+    el.btnAdd.addEventListener("click", () => openModal("add"));
+
+    el.btnModalClose.addEventListener("click", () => closeModal({focusScan:true}));
+    el.btnModalCancel.addEventListener("click", () => closeModal({focusScan:true}));
+    el.modalOverlay.addEventListener("click", (e) => {
+      if (e.target === el.modalOverlay) closeModal({focusScan:true});
+    });
+
+    el.mName.addEventListener("input", () => {
+      const catTyped = String(el.mCategory.value || "").trim();
+      if (catTyped) return;
+      const inferred = inferCategoryFromName(el.mName.value, learnMap);
+      el.mCategory.value = normalizeCategoryInput(inferred);
+      modalUpdateCatHint();
+    });
+    el.mCategory.addEventListener("input", () => {
+      modalUpdateCatHint();
+    });
+    el.mCategory.addEventListener("blur", () => {
+      const v = String(el.mCategory.value || "").trim();
+      if (v) el.mCategory.value = normalizeCategoryInput(v);
+      modalUpdateCatHint();
+    });
+
+    el.btnModalSave.addEventListener("click", saveModal);
+    el.btnModalDelete.addEventListener("click", deleteModalProduct);
+
+    el.btnExport.addEventListener("click", exportJSON);
+    el.btnImport.addEventListener("click", () => el.fileImport.click());
+    el.fileImport.addEventListener("change", (e) => {
+      const file = e.target.files?.[0];
+      e.target.value = "";
+      if (!file) return;
+      importJSONFile(file);
+    });
+    el.btnBackup.addEventListener("click", manualBackup);
+    el.btnRestore.addEventListener("click", restoreBackup);
+
+    el.btnResetOrdered.addEventListener("click", () => {
+      state.products.forEach(p => p.ordered = false);
+      saveAll("reset-ordered");
+      renderOrders();
+      toast("success","Bestellijst","Alle vinkjes zijn gewist.");
+      el.scanInput.focus();
+    });
+
+    el.btnToggleHideChecked.addEventListener("click", () => {
+      state.ui.hideCheckedOrders = !state.ui.hideCheckedOrders;
+      saveAll("toggle-hide-checked");
+      renderOrders();
+    });
+
+    window.addEventListener("load", () => setTimeout(() => el.scanInput.focus(), 0));
+  }
+
+  function ensureDataSafety(){
+    const ring = loadBackupRing();
+    if (!ring.length) makeBackup("first-run");
+    setInterval(() => makeBackup("timer"), 5 * 60 * 1000);
+    storageHealthCheck();
+    setInterval(storageHealthCheck, 60 * 1000);
+  }
+
+  function init(){
+    loadState();
+    state.products = Array.isArray(state.products) ? state.products.map(normalizeProduct) : [];
+    state.products.forEach(p => {
+      if (!p.categoryManual){
+        const inferred = inferCategoryFromName(p.name, learnMap);
+        if (inferred) p.category = normalizeCategoryInput(inferred);
+      } else {
+        p.category = normalizeCategoryInput(p.category);
+      }
+      if (p.ordered == null) p.ordered = false;
+    });
+    saveAll("init");
+    makeBackup("init");
+    setupEvents();
+    ensureDataSafety();
+    renderAll();
+    el.scanInput.focus();
+  }
+
+  init();
+})();
+</script>
 </body>
 </html>
