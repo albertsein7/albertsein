@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="nl">
 <head>
@@ -7,21 +6,11 @@
 <title>AlbertSEIN — Voorraadbeheer (Scan-first)</title>
 <style>
   :root{
-    --bg0:#0b1220;
-    --bg1:#0f172a;
-    --panel:#ffffff;
-    --line:rgba(15,23,42,.10);
-    --muted:#64748b;
-    --text:#0f172a;
-    --brand:#4f46e5;
-    --brand-soft:#e0e7ff;
-    --brand-strong:#3730a3;
-    --good:#16a34a;
-    --warn:#f59e0b;
-    --bad:#dc2626;
+    --bg0:#0b1220; --bg1:#0f172a; --panel:#ffffff; --line:rgba(15,23,42,.10);
+    --muted:#64748b; --text:#0f172a; --brand:#4f46e5; --brand-soft:#e0e7ff;
+    --brand-strong:#3730a3; --good:#16a34a; --warn:#f59e0b; --bad:#dc2626;
     --shadow:0 18px 50px rgba(0,0,0,.22);
   }
-
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
@@ -34,428 +23,121 @@
       linear-gradient(180deg, var(--bg0), var(--bg1));
     color:var(--text);
   }
-
-  .app{
-    max-width:1900px;
-    margin:0 auto;
-    padding:16px;
-    min-height:100%;
-  }
-
-  .topbar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin-bottom:14px;
-  }
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    color:#e2e8f0;
-    font-weight:900;
-    letter-spacing:.2px;
-    flex-wrap:wrap;
-  }
-  .brand .dot{
-    width:12px;height:12px;border-radius:999px;background:var(--brand);
-    box-shadow:0 0 0 6px rgba(79,70,229,.18);
-  }
-  .top-actions{display:flex; gap:10px; flex-wrap:wrap}
-
-  .grid{
-    display:grid;
-    grid-template-columns: 560px 1fr 560px;
-    gap:16px;
-    align-items:start;
-  }
-
-  .zone{
-    border-radius:22px;
-    padding:14px;
-    background:rgba(255,255,255,.06);
-    border:1px solid rgba(255,255,255,.08);
-  }
-
-  .card{
-    background:var(--panel);
-    border-radius:16px;
-    box-shadow:var(--shadow);
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,.35);
-  }
-  .cardHeader{
-    padding:14px 16px;
-    font-weight:900;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg, #ffffff, #fbfdff);
-  }
+  .app{max-width:1900px;margin:0 auto;padding:16px;min-height:100%}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+  .brand{display:flex;align-items:center;gap:10px;color:#e2e8f0;font-weight:900;letter-spacing:.2px;flex-wrap:wrap}
+  .brand .dot{width:12px;height:12px;border-radius:999px;background:var(--brand);box-shadow:0 0 0 6px rgba(79,70,229,.18)}
+  .top-actions{display:flex;gap:10px;flex-wrap:wrap}
+  .grid{display:grid;grid-template-columns:560px 1fr 560px;gap:16px;align-items:start}
+  .zone{border-radius:22px;padding:14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+  .card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow);overflow:hidden;border:1px solid rgba(255,255,255,.35)}
+  .cardHeader{padding:14px 16px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfdff)}
   .cardBody{padding:14px 16px}
-
-  .subtle{
-    color:var(--muted);
-    font-weight:700;
-    font-size:12px;
-  }
-
-  .btn{
-    border:0;
-    border-radius:999px;
-    padding:10px 14px;
-    font-weight:900;
-    cursor:pointer;
-    background:#eef2ff;
-    color:var(--brand-strong);
-    transition:transform .05s ease, filter .15s ease;
-    user-select:none;
-  }
+  .subtle{color:var(--muted);font-weight:700;font-size:12px}
+  .btn{border:0;border-radius:999px;padding:10px 14px;font-weight:900;cursor:pointer;background:#eef2ff;color:var(--brand-strong);transition:transform .05s ease,filter .15s ease;user-select:none}
   .btn:active{transform:translateY(1px)}
-  .btn.primary{background:var(--brand); color:#fff}
-  .btn.ghost{background:#eef2ff; color:var(--brand-strong)}
-  .btn.danger{background:#fee2e2; color:#991b1b}
-  .btn.dark{background:#0b1220; color:#e2e8f0}
-  .btn.small{padding:8px 12px; font-size:13px}
-  .btn:disabled{opacity:.55; cursor:not-allowed}
-
-  .row{display:flex; gap:10px; flex-wrap:wrap}
+  .btn.primary{background:var(--brand);color:#fff}
+  .btn.ghost{background:#eef2ff;color:var(--brand-strong)}
+  .btn.danger{background:#fee2e2;color:#991b1b}
+  .btn.dark{background:#0b1220;color:#e2e8f0}
+  .btn.small{padding:8px 12px;font-size:13px}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
   .row.nowrap{flex-wrap:nowrap}
   .spacer{flex:1}
 
-  /* Scan anchor */
-  .scanWrap{display:flex; flex-direction:column; gap:12px}
+  .scanWrap{display:flex;flex-direction:column;gap:12px}
   .scanInput{
-    width:100%;
-    font-size:34px;
-    padding:18px 18px;
-    border-radius:18px;
-    border:3px solid rgba(79,70,229,.55);
-    font-weight:950;
-    letter-spacing:.2px;
-    outline:none;
-    background:linear-gradient(180deg, #ffffff, #f8fafc);
-    transition:border-color .15s ease, box-shadow .15s ease;
+    width:100%;font-size:34px;padding:18px;border-radius:18px;border:3px solid rgba(79,70,229,.55);
+    font-weight:950;letter-spacing:.2px;outline:none;background:linear-gradient(180deg,#fff,#f8fafc);
+    transition:border-color .15s ease,box-shadow .15s ease;
   }
-  .scanInput.mode-in{
-    border-color:rgba(59,130,246,.8);
-    box-shadow:0 0 0 6px rgba(59,130,246,.18);
-  }
-  .scanInput.mode-out{
-    border-color:rgba(220,38,38,.8);
-    box-shadow:0 0 0 6px rgba(220,38,38,.18);
-  }
-  .scanInput.pulse{
-    animation: pulseFocus .22s ease-out 1;
-  }
-  @keyframes pulseFocus{
-    0%{transform:scale(1); filter:brightness(1)}
-    60%{transform:scale(1.01); filter:brightness(1.03)}
-    100%{transform:scale(1); filter:brightness(1)}
-  }
+  .scanInput.mode-in{border-color:rgba(59,130,246,.8);box-shadow:0 0 0 6px rgba(59,130,246,.18)}
+  .scanInput.mode-out{border-color:rgba(220,38,38,.8);box-shadow:0 0 0 6px rgba(220,38,38,.18)}
+  .scanInput.pulse{animation:pulseFocus .22s ease-out 1}
+  @keyframes pulseFocus{0%{transform:scale(1)}60%{transform:scale(1.01)}100%{transform:scale(1)}}
+  .scanHint{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-weight:800;font-size:13px}
 
-  .scanHint{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    color:var(--muted);
-    font-weight:800;
-    font-size:13px;
-  }
+  .modeToggleWrap{display:flex;flex-direction:column;gap:6px}
+  .modeLabel{font-size:12px;font-weight:900;color:var(--muted)}
+  .modeToggle{display:flex;border-radius:999px;background:#e5e7eb;padding:4px;gap:4px}
+  .modeOption{flex:1;border-radius:999px;padding:10px 12px;text-align:center;font-weight:900;font-size:14px;cursor:pointer;user-select:none;color:#0f172a;background:transparent;transition:background .15s ease,color .15s ease}
+  .modeOption.active-in{background:var(--brand-soft);color:var(--brand-strong)}
+  .modeOption.active-out{background:#fee2e2;color:#b91c1c}
 
-  /* Toggle switch */
-  .modeToggleWrap{display:flex; flex-direction:column; gap:6px}
-  .modeLabel{font-size:12px; font-weight:900; color:var(--muted)}
-  .modeToggle{
-    display:flex;
-    border-radius:999px;
-    background:#e5e7eb;
-    padding:4px;
-    gap:4px;
-  }
-  .modeOption{
-    flex:1;
-    border-radius:999px;
-    padding:10px 12px;
-    text-align:center;
-    font-weight:900;
-    font-size:14px;
-    cursor:pointer;
-    user-select:none;
-    color:#0f172a;
-    background:transparent;
-    transition:background .15s ease, color .15s ease;
-  }
-  .modeOption.active-in{background:var(--brand-soft); color:var(--brand-strong)}
-  .modeOption.active-out{background:#fee2e2; color:#b91c1c}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:160px}
+  .label{font-size:12px;font-weight:900;color:var(--muted)}
+  .input,.select{width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);font-weight:900;outline:none;background:#fff}
+  .input:focus,.select:focus{border-color:rgba(79,70,229,.55);box-shadow:0 0 0 5px rgba(79,70,229,.14)}
+  .input.big{font-size:20px;padding:14px;border-width:2px}
 
-  .field{display:flex; flex-direction:column; gap:6px; min-width:160px}
-  .label{font-size:12px; font-weight:900; color:var(--muted)}
-  .input, .select{
-    width:100%;
-    padding:12px 12px;
-    border-radius:14px;
-    border:1px solid var(--line);
-    font-weight:900;
-    outline:none;
-    background:#fff;
-  }
-  .input:focus, .select:focus{
-    border-color:rgba(79,70,229,.55);
-    box-shadow:0 0 0 5px rgba(79,70,229,.14);
-  }
-  .input.big{font-size:20px; padding:14px 14px; border-width:2px}
-
-  /* Tables */
-  table{width:100%; border-collapse:collapse}
-  th,td{padding:10px 10px; border-bottom:1px solid var(--line); vertical-align:middle}
-  th{
-    text-align:left;
-    font-size:12px;
-    color:var(--muted);
-    font-weight:950;
-    letter-spacing:.2px;
-    background:linear-gradient(180deg, #ffffff, #fbfdff);
-    position:sticky;
-    top:0;
-    z-index:1;
-  }
-  .tableWrap{
-    border:1px solid var(--line);
-    border-radius:16px;
-    overflow:auto;
-    max-height:62vh;
-    background:#fff;
-  }
-  .edit{
-    width:100%;
-    padding:10px 10px;
-    border-radius:12px;
-    border:1px dashed transparent;
-    font-weight:900;
-    outline:none;
-    background:transparent;
-  }
-  .edit:focus{
-    border-color:rgba(79,70,229,.55);
-    background:#fff;
-    box-shadow:0 0 0 5px rgba(79,70,229,.12);
-  }
+  table{width:100%;border-collapse:collapse}
+  th,td{padding:10px;border-bottom:1px solid var(--line);vertical-align:middle}
+  th{text-align:left;font-size:12px;color:var(--muted);font-weight:950;letter-spacing:.2px;background:linear-gradient(180deg,#fff,#fbfdff);position:sticky;top:0;z-index:1}
+  .tableWrap{border:1px solid var(--line);border-radius:16px;overflow:auto;max-height:62vh;background:#fff}
+  .edit{width:100%;padding:10px;border-radius:12px;border:1px dashed transparent;font-weight:900;outline:none;background:transparent}
+  .edit:focus{border-color:rgba(79,70,229,.55);background:#fff;box-shadow:0 0 0 5px rgba(79,70,229,.12)}
   .num{max-width:120px}
-  .mono{font-variant-numeric: tabular-nums; font-feature-settings:"tnum" 1}
-  .muted{color:var(--muted); font-weight:800}
+  .mono{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+  .help{padding:12px;border-radius:14px;background:#f8fafc;border:1px dashed rgba(15,23,42,.18);color:var(--muted);font-weight:900}
 
-  /* Order list minimal */
-  .orderTop{
-    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-    margin-bottom:10px;
-  }
-  .orderList{
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    max-height:70vh;
-    overflow:auto;
-    padding-right:4px;
-  }
-  .orderItem{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:12px 12px;
-    border-radius:14px;
-    background:rgba(255,255,255,.96);
-    border:1px solid var(--line);
-  }
+  .orderTop{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .orderList{display:flex;flex-direction:column;gap:8px;max-height:70vh;overflow:auto;padding-right:4px}
+  .orderItem{display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:rgba(255,255,255,.96);border:1px solid var(--line)}
   .orderItem.checked{opacity:.45}
-  .orderCheck{width:22px;height:22px; cursor:pointer}
-  .orderName{flex:1; font-size:18px; font-weight:950}
-  .orderNeed{font-size:18px; font-weight:950; color:var(--bad)}
-  .help{
-    padding:12px 12px;
-    border-radius:14px;
-    background:#f8fafc;
-    border:1px dashed rgba(15,23,42,.18);
-    color:var(--muted);
-    font-weight:900;
-  }
+  .orderCheck{width:22px;height:22px;cursor:pointer}
+  .orderName{flex:1;font-size:18px;font-weight:950}
+  .orderNeed{font-size:18px;font-weight:950;color:var(--bad)}
 
-  /* Log */
-  details.logDay{
-    border:1px solid var(--line);
-    border-radius:14px;
-    overflow:hidden;
-    background:#fff;
-  }
-  details.logDay summary{
-    cursor:pointer;
-    padding:12px 12px;
-    font-weight:950;
-    list-style:none;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    background:linear-gradient(180deg, #ffffff, #fbfdff);
-  }
+  details.logDay{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+  details.logDay summary{cursor:pointer;padding:12px;font-weight:950;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:10px;background:linear-gradient(180deg,#fff,#fbfdff)}
   details.logDay summary::-webkit-details-marker{display:none}
-  .logList{padding:10px 12px; display:flex; flex-direction:column; gap:8px}
-
-  .logGroup{
-    border:1px solid var(--line);
-    border-radius:12px;
-    overflow:hidden;
-    background:#f8fafc;
-  }
-  .logGroupHeader{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:10px 10px;
-    cursor:pointer;
-    user-select:none;
-    font-weight:950;
-  }
-  .logGroupHeader:focus{
-    outline:none;
-    box-shadow:0 0 0 5px rgba(79,70,229,.14);
-    background:#fff;
-  }
-  .logGroupMeta{color:var(--muted); font-weight:850; font-size:12px}
-  .logTimes{
-    display:none;
-    padding:10px 10px;
-    border-top:1px dashed var(--line);
-    background:#fff;
-  }
+  .logList{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+  .logGroup{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#f8fafc}
+  .logGroupHeader{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;cursor:pointer;user-select:none;font-weight:950}
+  .logGroupHeader:focus{outline:none;box-shadow:0 0 0 5px rgba(79,70,229,.14);background:#fff}
+  .logGroupMeta{color:var(--muted);font-weight:850;font-size:12px}
+  .logTimes{display:none;padding:10px;border-top:1px dashed var(--line);background:#fff}
   .logTimes.open{display:block}
-  .logTimePill{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:6px 10px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:#f8fafc;
-    font-weight:900;
-    font-size:12px;
-    margin:4px 6px 0 0;
-    color:#0f172a;
-  }
+  .logTimePill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:#f8fafc;font-weight:900;font-size:12px;margin:4px 6px 0 0;color:#0f172a}
 
-  /* Modal */
-  .modalOverlay{
-    position:fixed; inset:0;
-    background:rgba(2,6,23,.55);
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:18px;
-    z-index:50;
-  }
+  .modalOverlay{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
   .modalOverlay.open{display:flex}
-  .modal{
-    width:min(720px, 100%);
-    background:#fff;
-    border-radius:18px;
-    box-shadow:0 30px 80px rgba(0,0,0,.35);
-    border:1px solid rgba(255,255,255,.35);
-    overflow:hidden;
-  }
-  .modalHeader{
-    padding:14px 16px;
-    font-weight:950;
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    border-bottom:1px solid var(--line);
-    background:linear-gradient(180deg, #ffffff, #fbfdff);
-  }
+  .modal{width:min(720px,100%);background:#fff;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.35);overflow:hidden}
+  .modalHeader{padding:14px 16px;font-weight:950;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#fff,#fbfdff)}
   .modalBody{padding:14px 16px}
-  .modalFooter{
-    padding:14px 16px;
-    border-top:1px solid var(--line);
-    display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
-    background:#fff;
-  }
+  .modalFooter{padding:14px 16px;border-top:1px solid var(--line);display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;background:#fff}
 
-  /* Toast */
-  .toasts{
-    position:fixed;
-    right:16px;
-    bottom:16px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    z-index:60;
-    max-width:min(520px, calc(100vw - 32px));
-  }
-  .toast{
-    background:#fff;
-    border-radius:16px;
-    border:1px solid var(--line);
-    box-shadow:0 18px 50px rgba(0,0,0,.22);
-    padding:12px 12px;
-    display:flex;
-    gap:10px;
-    align-items:flex-start;
-  }
-  .toast .icon{
-    width:34px;height:34px;border-radius:12px;
-    display:flex;align-items:center;justify-content:center;
-    font-weight:950;
-    color:#fff;
-    flex:0 0 auto;
-  }
+  .toasts{position:fixed;right:16px;bottom:16px;display:flex;flex-direction:column;gap:10px;z-index:60;max-width:min(520px,calc(100vw - 32px))}
+  .toast{background:#fff;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.22);padding:12px;display:flex;gap:10px;align-items:flex-start}
+  .toast .icon{width:34px;height:34px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:950;color:#fff;flex:0 0 auto}
   .toast.success .icon{background:var(--good)}
   .toast.error .icon{background:var(--bad)}
   .toast.info .icon{background:var(--brand)}
   .toastTitle{font-weight:950}
-  .toastMsg{color:var(--muted); font-weight:850; margin-top:2px}
+  .toastMsg{color:var(--muted);font-weight:850;margin-top:2px}
 
-  /* Scan confirm overlay */
   .scanFlash{
-    position:fixed;
-    left:50%;
-    top:18px;
-    transform:translateX(-50%);
-    z-index:70;
-    display:none;
-    padding:14px 16px;
-    border-radius:18px;
-    background:rgba(255,255,255,.96);
-    border:1px solid var(--line);
-    box-shadow:0 18px 50px rgba(0,0,0,.22);
-    min-width:min(720px, calc(100vw - 32px));
+    position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:70;display:none;
+    padding:14px 16px;border-radius:18px;background:rgba(255,255,255,.96);border:1px solid var(--line);
+    box-shadow:0 18px 50px rgba(0,0,0,.22);min-width:min(720px,calc(100vw - 32px));
   }
-  .scanFlash.show{display:block; animation: flashIn .12s ease-out 1}
-  @keyframes flashIn{
-    from{opacity:0; transform:translateX(-50%) translateY(-6px)}
-    to{opacity:1; transform:translateX(-50%) translateY(0)}
-  }
-  .scanFlashTop{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    font-weight:950;
-  }
+  .scanFlash.show{display:block;animation:flashIn .12s ease-out 1}
+  @keyframes flashIn{from{opacity:0;transform:translateX(-50%) translateY(-6px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+  .scanFlashTop{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:950}
   .scanFlashName{font-size:20px}
-  .scanFlashMeta{color:var(--muted); font-weight:900; font-size:13px}
-  .pill{
-    padding:6px 10px;
-    border-radius:999px;
-    font-weight:950;
-    font-size:12px;
-    border:1px solid var(--line);
-    background:#f8fafc;
-  }
-  .pill.in{background:var(--brand-soft); color:var(--brand-strong)}
-  .pill.out{background:#fee2e2; color:#b91c1c}
+  .scanFlashMeta{color:var(--muted);font-weight:900;font-size:13px}
+  .pill{padding:6px 10px;border-radius:999px;font-weight:950;font-size:12px;border:1px solid var(--line);background:#f8fafc}
+  .pill.in{background:var(--brand-soft);color:var(--brand-strong)}
+  .pill.out{background:#fee2e2;color:#b91c1c}
 
-  /* Work mode */
   .workMode .zone.products{display:none}
-  .workMode .grid{grid-template-columns: 1fr 560px}
+  .workMode .grid{grid-template-columns:1fr 560px}
   .workMode .zone.scan{grid-column:1}
   .workMode .zone.orders{grid-column:2}
 
-  @media (max-width: 1650px){
-    .grid{grid-template-columns: 1fr}
+  @media (max-width:1650px){
+    .grid{grid-template-columns:1fr}
     .zone{padding:12px}
     .tableWrap{max-height:52vh}
     .orderList{max-height:52vh}
@@ -484,7 +166,6 @@
   </div>
 
   <div class="grid">
-    <!-- LINKS: Scan & acties -->
     <div class="zone scan">
       <div class="card">
         <div class="cardHeader">
@@ -529,7 +210,6 @@
       </div>
     </div>
 
-    <!-- MIDDEN: Productbeheer -->
     <div class="zone products">
       <div class="card">
         <div class="cardHeader">
@@ -569,7 +249,6 @@
       </div>
     </div>
 
-    <!-- RECHTS: Bestellijst -->
     <div class="zone orders">
       <div class="card">
         <div class="cardHeader">
@@ -583,7 +262,6 @@
             <button class="btn ghost small" id="btnToggleHideChecked">Verberg afgevinkt</button>
           </div>
 
-          <!-- NIEUW: zoeken + sorteren -->
           <div class="row" style="margin-bottom:10px">
             <div class="field" style="flex:1; min-width:220px">
               <div class="label">Zoek in bestellijst</div>
@@ -605,7 +283,6 @@
   </div>
 </div>
 
-<!-- Modal: add/edit product -->
 <div class="modalOverlay" id="modalOverlay" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modalHeader">
@@ -833,7 +510,7 @@
     ui: {
       hideCheckedOrders: false,
       workMode: false,
-      orderSort: "need",          // "need" | "name" | "category"
+      orderSort: "need",
       orderSearch: ""
     },
     meta: { lastSavedAt: null, createdAt: nowISO(), lastDay: todayKey() }
@@ -1026,7 +703,6 @@
         return (a.p.name||"").localeCompare(b.p.name||"", "nl");
       });
     }
-    // default: need desc, then name
     return items.sort((a,b) => (b.need - a.need) || (a.p.name||"").localeCompare(b.p.name||"", "nl"));
   }
 
@@ -1040,10 +716,8 @@
     if (q){
       items = items.filter(x => (x.p.name||"").toLowerCase().includes(q));
     }
-
     items = sortOrderItems(items);
 
-    // count blijft “te bestellen” op basis van echte items (zonder zoekfilter)
     const totalToOrder = computeOrderItems().length;
     el.orderCount.textContent = `${totalToOrder} te bestellen`;
 
@@ -1081,24 +755,16 @@
   }
 
   function stackDayEvents(events){
-    // stack per barcode + dir, maar behoud tijden
     const map = new Map();
     for (const ev of events){
       const key = `${ev.barcode}__${ev.dir}`;
       if (!map.has(key)){
-        map.set(key, {
-          barcode: ev.barcode,
-          name: ev.name,
-          dir: ev.dir,
-          qty: 0,
-          times: []
-        });
+        map.set(key, { barcode: ev.barcode, name: ev.name, dir: ev.dir, qty: 0, times: [] });
       }
       const g = map.get(key);
       g.qty += clampInt(ev.qty, 1, 9999);
       g.times.push(ev.at);
     }
-    // sort: meest recent (laatste tijd) bovenaan
     return Array.from(map.values()).sort((a,b) => {
       const atA = a.times[a.times.length-1] || "";
       const atB = b.times[b.times.length-1] || "";
@@ -1149,14 +815,11 @@
             <span>${escapeHTML(day)}</span>
             <span class="logGroupMeta">in: ${inCount} • uit: ${outCount} • totaal: ${list.length}</span>
           </summary>
-          <div class="logList">
-            ${groupsHtml}
-          </div>
+          <div class="logList">${groupsHtml}</div>
         </details>
       `;
     }).join("");
 
-    // bind toggles
     el.dayLogWrap.querySelectorAll(".logGroupHeader").forEach(h => {
       const toggle = () => {
         const day = h.dataset.day;
@@ -1262,16 +925,8 @@
 
     if (modalMode === "add"){
       const prod = normalizeProduct({
-        id: uid(),
-        barcode,
-        name,
-        category,
-        categoryManual,
-        standard,
-        current,
-        ordered:false,
-        createdAt: nowISO(),
-        updatedAt: nowISO(),
+        id: uid(), barcode, name, category, categoryManual,
+        standard, current, ordered:false, createdAt: nowISO(), updatedAt: nowISO(),
       });
 
       if (categoryManual){
@@ -1359,11 +1014,11 @@
     state.dayLog[day].push({ at: nowISO(), time, barcode, name, dir, qty });
   }
 
-  // ✅ scan: geen confirm popups, alleen blokkeren bij negatief
   function applyScan(barcode, qty){
     const code = String(barcode || "").trim();
     const q = clampInt(qty, 1, 9999);
     const prod = state.products.find(p => p.barcode === code);
+
     if (!prod){
       toast("info","Onbekende barcode","Voeg dit product toe.");
       openModal("add", null, code);
@@ -1409,13 +1064,7 @@
 
     showScanFlash({name: prod.name, barcode: prod.barcode, dir, qty: q, after: prod.current});
 
-    // ✅ Alleen bij exact 1 over: subtiele melding in dezelfde scan-flash
-    if (dir === "out" && prod.current === 1){
-      el.scanFlashMeta.textContent = "⚠️ Nog 1 op voorraad";
-    }
-
     toast("success", dir === "in" ? "Binnen geboekt" : "Uit geboekt", `${prod.name || prod.barcode} • aantal ${q}`);
-
     setTimeout(ensureScanFocus, 0);
   }
 
@@ -1438,14 +1087,7 @@
     if (!state.dayLog[day]) state.dayLog[day] = [];
     const t = new Date();
     const time = t.toTimeString().slice(0,5);
-    state.dayLog[day].push({
-      at: nowISO(),
-      time,
-      barcode: prod.barcode,
-      name: prod.name,
-      dir: "undo",
-      qty: last.qty
-    });
+    state.dayLog[day].push({ at: nowISO(), time, barcode: prod.barcode, name: prod.name, dir: "undo", qty: last.qty });
 
     saveAll("undo");
     renderAll();
@@ -1479,16 +1121,7 @@
     }
 
     prod.updatedAt = nowISO();
-    state.scanHistory.push({
-      at: nowISO(),
-      productId: prod.id,
-      barcode: prod.barcode,
-      name: prod.name,
-      dir: "undo",
-      qty: 1,
-      before,
-      after: prod.current
-    });
+    state.scanHistory.push({ at: nowISO(), productId: prod.id, barcode: prod.barcode, name: prod.name, dir: "undo", qty: 1, before, after: prod.current });
     state.scanHistory = state.scanHistory.slice(-80);
 
     logScan({ barcode: prod.barcode, name: prod.name, dir: "undo", qty: 1 });
@@ -1500,12 +1133,7 @@
   }
 
   function exportJSON(){
-    const payload = {
-      exportedAt: nowISO(),
-      appVersion: APP_VERSION,
-      state,
-      learnMap
-    };
+    const payload = { exportedAt: nowISO(), appVersion: APP_VERSION, state, learnMap };
     const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -1519,16 +1147,12 @@
   }
 
   function exportOrders(){
-    // export: niet-afgevinkt, en respecteer zoekfilter niet (export = echte lijst)
     const items = sortOrderItems(computeOrderItems()).filter(x => !x.p.ordered);
     if (!items.length){
       toast("info","Bestellijst","Geen open items om te exporteren.");
       return;
     }
-    const lines = [
-      "Artikel;Aantal",
-      ...items.map(({p, need}) => `${(p.name||"").replaceAll(";"," ")};${need}`)
-    ];
+    const lines = ["Artikel;Aantal", ...items.map(({p, need}) => `${(p.name||"").replaceAll(";"," ")};${need}`)];
     const blob = new Blob([lines.join("\n")], {type:"text/plain;charset=utf-8"});
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -1642,31 +1266,23 @@
     const t = todayKey();
     if (state.meta.lastDay !== t){
       state.meta.lastDay = t;
-
       state.products.forEach(p => p.ordered = false);
       state.scanHistory = [];
-
       saveAll("day-rollover");
       makeBackup("day-rollover");
       toast("info","Nieuwe dag","Vinkjes gereset en scanbuffer opgeschoond.");
     }
   }
 
-  /* Focus bewaker (scanner altijd actief) */
   function ensureScanFocus(){
     const scan = el.scanInput;
     if (!scan) return;
-
     if (el.modalOverlay.classList.contains("open")) return;
 
     const active = document.activeElement;
     if (active === scan) return;
 
-    if (active && (
-      active.tagName === "INPUT" ||
-      active.tagName === "TEXTAREA" ||
-      active.isContentEditable
-    )) return;
+    if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
 
     scan.focus({ preventScroll:true });
     scan.classList.remove("pulse");
@@ -1674,7 +1290,7 @@
     scan.classList.add("pulse");
   }
 
-  /* Scan-buffer */
+  // Scanbuffer bestaat nog alleen als "nood-opruiming" (we committen nooit meer via document.keydown)
   const scanBuffer = {
     s: "",
     lastAt: 0,
@@ -1685,22 +1301,6 @@
       el.scanBufferHint.textContent = "";
       if (this.timer) clearTimeout(this.timer);
       this.timer = null;
-    },
-    pushChar(ch){
-      const now = Date.now();
-      if (now - this.lastAt > 120) this.s = "";
-      this.lastAt = now;
-      this.s += ch;
-      el.scanBufferHint.textContent = this.s ? `buffer: ${this.s}` : "";
-      if (this.timer) clearTimeout(this.timer);
-      this.timer = setTimeout(() => this.clear(), 450);
-    },
-    commit(){
-      const code = this.s.trim();
-      this.clear();
-      if (!code) return;
-      const qty = clampInt(parseInt(el.qtyInput.value,10), 1, 9999);
-      applyScan(code, qty);
     }
   };
 
@@ -1709,10 +1309,19 @@
       opt.addEventListener("click", () => setMode(opt.dataset.mode));
     });
 
+    // ✅ Enige scanpad: scanInput + Enter
     el.scanInput.addEventListener("keydown", (e) => {
       if (e.key !== "Enter") return;
+
+      e.preventDefault();
+      e.stopPropagation();
+
+      // extra zekerheid: nooit restbuffer laten "meeliften"
+      scanBuffer.clear();
+
       const code = String(el.scanInput.value || "").trim();
       if (!code) return;
+
       const qty = clampInt(parseInt(el.qtyInput.value,10), 1, 9999);
       el.scanInput.value = "";
       applyScan(code, qty);
@@ -1793,14 +1402,12 @@
       setTimeout(ensureScanFocus, 0);
     });
 
-    // NIEUW: bestellijst zoeken
     el.orderSearchInput.addEventListener("input", () => {
       state.ui.orderSearch = String(el.orderSearchInput.value || "");
       saveAll("order-search");
       renderOrders();
     });
 
-    // NIEUW: bestellijst sorteren
     el.btnOrderSortName.addEventListener("click", () => {
       state.ui.orderSort = "name";
       saveAll("order-sort");
@@ -1818,40 +1425,10 @@
 
     el.btnWorkMode.addEventListener("click", toggleWorkMode);
 
+    // ✅ Scanbuffer volledig uitgeschakeld: geen globale barcode-verwerking meer
     document.addEventListener("keydown", (e) => {
       if (el.modalOverlay.classList.contains("open")) return;
-
-      const active = document.activeElement;
-      const inTypingField = active && (
-        active.tagName === "INPUT" ||
-        active.tagName === "TEXTAREA" ||
-        active.isContentEditable
-      );
-
-      // laat typen in zoekvelden gewoon werken
-      if (inTypingField && active !== el.scanInput) return;
-
-      if (e.key === "Enter"){
-        if (scanBuffer.s) {
-          e.preventDefault();
-          scanBuffer.commit();
-          return;
-        }
-        return;
-      }
-
-      if (e.key === "Escape"){
-        scanBuffer.clear();
-        return;
-      }
-
-      if (e.key.length === 1){
-        const ch = e.key;
-        if (/[\w\d\-]/.test(ch)){
-          scanBuffer.pushChar(ch);
-          if (document.activeElement !== el.scanInput) ensureScanFocus();
-        }
-      }
+      if (e.key === "Escape") scanBuffer.clear();
     });
 
     window.addEventListener("focus", () => setTimeout(ensureScanFocus, 0));
@@ -1883,7 +1460,6 @@
       if (p.ordered == null) p.ordered = false;
     });
 
-    // sync UI fields
     el.orderSearchInput.value = String(state.ui.orderSearch || "");
 
     dayRolloverIfNeeded();
